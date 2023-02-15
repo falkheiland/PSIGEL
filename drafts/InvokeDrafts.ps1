@@ -2,13 +2,13 @@
 #requires -version 5.0
 
 $DSC = [IO.Path]::DirectorySeparatorChar
-$Config = Import-PowerShellDataFile -Path ('.{0}config.psd1' -f $DSC) -ErrorAction Stop
 
 if (!(Test-Path .\InvokeDrafts.ps1))
 {
   throw 'Set Location to the path where this script is located!'
 }
 
+$Config = Import-PowerShellDataFile -Path ('.{0}config.psd1' -f $DSC) -ErrorAction Stop
 $PSDefaultParameterValues = $Config.PSDPV
 $PSIGELPath = '{0}{1}source{1}PSIGEL.psd1' -f (Split-Path -Path $PWD -Parent), $DSC
 Import-Module -FullyQualifiedName $PSIGELPath -Force
