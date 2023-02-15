@@ -34,7 +34,7 @@
   # Note: if a rule is in both IncludeRules and ExcludeRules, the rule
   # will be excluded.
   ExcludeRules = @(
-    #'PSAvoidUsingWriteHost'
+    'PSAvoidUsingWriteHost'
   )
 
   # You can use rule configuration to configure rules that support it:
@@ -56,10 +56,10 @@
       IgnoreOneLineBlock = $true
     }
     PSPlaceCloseBrace                         = @{
-      Enable             = $true
+      Enable             = $false #$true
       NoEmptyLineBefore  = $false
       IgnoreOneLineBlock = $true
-      NewLineAfter       = $true
+      NewLineAfter       = $false #$true
     }
     PSUseConsistentIndentation                = @{
       Enable              = $true
