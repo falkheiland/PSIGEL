@@ -1,6 +1,7 @@
 output/
 
 config.psd1
+README.html
 
 **.bak
 *.local.*

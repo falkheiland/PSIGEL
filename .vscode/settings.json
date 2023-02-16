@@ -2,6 +2,11 @@
   "powershell.scriptAnalysis.settingsPath": ".vscode/analyzersettings.psd1",
   "powershell.scriptAnalysis.enable": true,
   "cSpell.words": [
-    "PSIGEL"
+    "igelexperts",
+    "igelrmserver",
+    "Knowledgebase",
+    "PSIGEL",
+    "Quickstart",
+    "UMSAPI"
   ]
 }
