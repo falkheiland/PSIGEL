@@ -2,6 +2,7 @@ output/
 
 config.psd1
 README.html
+*.code-workspace
 
 **.bak
 *.local.*

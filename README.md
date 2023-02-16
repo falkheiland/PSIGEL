@@ -136,8 +136,9 @@ C:\> $null = Remove-UMSAPICookie -Computername igelrmserver -WebSession $WebSess
 ## Maintainer
 
 - Falk Heiland
+
 [![https://github.com/falkheiland][github-fh-badge]][github-fh]
-[![http://twitter.com/falkheiland][twitter-fh-badge]][twitter-fh]
+[![https://fosstodon.org/@falkheiland][mastodon-fh-badge]][mastodon-fh]
 
 ## License
 
@@ -158,5 +159,5 @@ This project is [licensed under the MIT License](LICENSE).
 [slack-igelcommunity]: https://igelcommunity.slack.com/
 [github-fh-badge]: https://img.shields.io/badge/Github-falkheiland-green?logo=github
 [github-fh]: https://github.com/falkheiland
-[twitter-fh-badge]: https://img.shields.io/badge/Twitter-falkheiland-blue?logo=twitter
-[twitter-fh]: https://twitter.com/falkheiland
+[mastodon-fh-badge]: https://img.shields.io/mastodon/follow/109337165679621114?domain=https%3A%2F%2Ffosstodon.org&style=social
+[mastodon-fh]: https://fosstodon.org/@falkheiland
