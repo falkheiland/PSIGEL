@@ -11,7 +11,7 @@ if (!(Test-Path .\InvokeDrafts.ps1))
 $Config = Import-PowerShellDataFile -Path ('.{0}config.psd1' -f $DSC) -ErrorAction Stop
 $PSDefaultParameterValues = $Config.PSDPV
 $PSIGELPath = '{0}{1}source{1}PSIGEL.psd1' -f (Split-Path -Path $PWD -Parent), $DSC
-Import-Module -FullyQualifiedName $PSIGELPath -Force -ErrorAction Stop
+Import-Module -FullyQualifiedName $PSIGELPath -Force -ErrorAction Stop -Verbose
 
 if ($PSEdition -eq 'core' -and (-Not $IsWindows))
 {
