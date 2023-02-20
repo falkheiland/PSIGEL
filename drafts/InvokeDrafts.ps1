@@ -10,7 +10,28 @@ if (!(Test-Path .\InvokeDrafts.ps1))
 
 $Config = Import-PowerShellDataFile -Path ('.{0}config.psd1' -f $DSC) -ErrorAction Stop
 $PSDefaultParameterValues = $Config.PSDPV
-Import-Module -FullyQualifiedName $Config.ModuleBuildPath -Force -ErrorAction Stop -Verbose
+
+#Get public and private function definition files.
+$Public = @( Get-ChildItem -Path ..\source\Public\*.ps1 -ErrorAction SilentlyContinue )
+$Private = @( Get-ChildItem -Path ..\source\Private\*.ps1 -ErrorAction SilentlyContinue )
+
+#Dot source the files
+Foreach ($import in @($Public + $Private))
+{
+  Try
+  {
+    . $import.fullname
+  }
+  Catch
+  {
+    Write-Error -Message ('Failed to import function {0}: {1}' -f $import.fullname, $_)
+  }
+}
+
+#Export-ModuleMember -Function $Public.Basename
+
+# Use build for draft
+# Import-Module -FullyQualifiedName $Config.ModuleBuildPath -Force -ErrorAction Stop -Verbose
 
 if ($PSEdition -eq 'core' -and (-Not $IsWindows))
 {
