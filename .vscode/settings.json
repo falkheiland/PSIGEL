@@ -1,6 +1,16 @@
 {
-  "powershell.scriptAnalysis.settingsPath": ".vscode/analyzersettings.psd1",
-  "powershell.scriptAnalysis.enable": true,
+  "editor.detectIndentation": false,
+  "editor.tabSize": 2,
+  "powershell.codeFormatting.autoCorrectAliases": true,
+  "powershell.codeFormatting.ignoreOneLineBlock": false,
+  "powershell.codeFormatting.newLineAfterCloseBrace": false,
+  "powershell.codeFormatting.openBraceOnSameLine": false,
+  "powershell.codeFormatting.pipelineIndentationStyle": "IncreaseIndentationForFirstPipeline",
+  "powershell.codeFormatting.preset": "Allman",
+  "powershell.codeFormatting.trimWhitespaceAroundPipe": true,
+  "powershell.codeFormatting.useConstantStrings": true,
+  "powershell.codeFormatting.useCorrectCasing": true,
+  "powershell.codeFormatting.whitespaceBetweenParameters": true,
   "cSpell.words": [
     "igelexperts",
     "igelrmserver",

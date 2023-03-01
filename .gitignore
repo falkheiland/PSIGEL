@@ -1,8 +1,7 @@
 output/
 
 config.psd1
-README.html
-*.code-workspace
+*.html
 
 **.bak
 *.local.*
