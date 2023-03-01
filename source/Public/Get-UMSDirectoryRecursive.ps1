@@ -1,5 +1,7 @@
 function Get-UMSDirectoryRecursive
 {
+  [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSReviewUnusedParameter', 'Id', Justification = 'false positive')]
+  [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSReviewUnusedParameter', 'DirectoryColl', Justification = 'false positive')]
   [CmdletBinding(DefaultParameterSetName = 'Directory')]
   param (
     [Parameter(Mandatory, ValueFromPipeline, ValueFromPipelineByPropertyName)]

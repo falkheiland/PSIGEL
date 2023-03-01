@@ -15,10 +15,10 @@ function New-UMSFilterString
 
   .EXAMPLE
   New-UMSFilterString -Filter 'children'
-  
+
   .EXAMPLE
   New-UMSFilterString -Filter 'deviceattributes'
-  
+
   .EXAMPLE
   New-UMSFilterString -Filter 'networkadapters'
 

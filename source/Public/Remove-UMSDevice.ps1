@@ -1,5 +1,6 @@
 ﻿function Remove-UMSDevice
 {
+  [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSReviewUnusedParameter', 'Online', Justification = 'false positive')]
   [cmdletbinding(SupportsShouldProcess, ConfirmImpact = 'High', DefaultParameterSetName = 'Offline')]
   param
   (

@@ -1,5 +1,6 @@
 ﻿function Get-UMSProfileAssignment
 {
+  [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSReviewUnusedParameter', 'Directory', Justification = 'false positive')]
   [CmdletBinding(DefaultParameterSetName = 'Device')]
   param
   (

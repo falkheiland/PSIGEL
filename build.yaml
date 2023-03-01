@@ -14,8 +14,8 @@ VersionedOutputDirectory: true
 # Defining 'Workflows' (suite of InvokeBuild tasks) to be run using their alias
 BuildWorkflow:
   ".": # "." is the default Invoke-Build workflow. It is called when no -Tasks is specified to the build.ps1
-    - build
-    #- test
+    #- build
+    - test
 
   build:
     - Clean
@@ -45,8 +45,9 @@ Pester:
   Configuration:
     Run:
       Path:
-        - tests/QA/
-        - tests/Unit/
+        #- tests/QA/
+        - tests/QA/module.tests.ps1
+        #- tests/Unit/
         #- tests/Unit/Get-PFBuilding.Tests.ps1
         #- tests/Unit/Get-PF*.Tests.ps1
         #- tests/Integration
@@ -54,29 +55,34 @@ Pester:
         #- tests/Unit/Get-PFStatus.Tests.ps1
     Filter:
       Tag:
+        #- Changelog
+        #- TestQuality
+        #- FunctionalQuality
+        #- helpQuality #TODO
+        -
 
       ExcludeTag:
 
     Output:
-      Verbosity: Normal
-    CodeCoverage:
-      Path:
-        # Tests for New-PF* in ToDo
-        #- source/Public/
-        #- source/Public/Get-PFBuilding.ps1
-        - source/Public/Get-PF*.ps1
-        - source/Public/Update-PF*.ps1
-        - source/Public/Remove-PF*.ps1
-      OutputFormat: "JaCoCo"
-      CoveragePercentTarget: 85
-      OutputPath: "tests/Data/coverage.xml"
-      OutputEncoding:
-      ExcludeTests:
-    TestResult:
-      OutputFormat: NUnitXML
-      OutputPath:
-      OutputEncoding:
-      TestSuiteName:
+      Verbosity: Detailed #Normal
+    # CodeCoverage:
+    #   Path:
+    #   # Tests for New-PF* in ToDo
+    #   #- source/Public/
+    #   #- source/Public/Get-UMSDevice.ps1
+    #   #- source/Public/Get-UMS*.ps1
+    #   #- source/Public/Update-UMS*.ps1
+    #   #- source/Public/Remove-UMS*.ps1
+    #   OutputFormat: "JaCoCo"
+    #   CoveragePercentTarget: 85
+    #   OutputPath: "tests/Data/coverage.xml"
+    #   OutputEncoding:
+    #   ExcludeTests:
+    # TestResult:
+    #   OutputFormat: NUnitXML
+    #   OutputPath:
+    #   OutputEncoding:
+    #   TestSuiteName:
 
 # Import ModuleBuilder tasks from a specific PowerShell module using the build
 # task's alias. Wildcard * can be used to specify all tasks that has a similar

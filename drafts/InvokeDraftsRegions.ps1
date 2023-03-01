@@ -50,6 +50,10 @@ $WebSession = New-UMSAPICookie
 $PSDefaultParameterValues.Add('*-UMS*:WebSession', $WebSession)
 #endregion
 
+#region stop full script execution via F5
+throw 'use F8 to execute the regions individually!'
+##endregion
+
 #region Get-UMSFirmware
 $params = @{
   #Whatif  = $false
@@ -58,8 +62,6 @@ $params = @{
 $FirmwareColl = Get-UMSFirmware @params
 $FirmwareColl
 #endregion
-
-<#
 
 #region https://igelcommunity.slack.com/archives/C8GP9JHQE/p1677627574428399
 (Get-UMSDevice -Filter details).where{
@@ -73,9 +75,7 @@ $FirmwareColl
 }
 #endregion
 
-#>
-
 #region end
-$null = Remove-UMSAPICookie
+Remove-UMSAPICookie
 #endregion
 #endregion
