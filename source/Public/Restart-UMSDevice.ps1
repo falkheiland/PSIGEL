@@ -37,7 +37,7 @@
     $Body = ConvertTo-Json @(
       @{
         id   = $Id
-        type = "tc"
+        type = 'tc'
       }
     )
     $Params = @{

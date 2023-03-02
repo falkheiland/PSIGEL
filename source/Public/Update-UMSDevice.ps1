@@ -120,12 +120,13 @@
         }
         if ($PSBoundParameters.GetEnumerator().Where{ $_.Key -eq 'DeviceAttributes' })
         {
-	  $DeviceAttributesArray = @()
-          foreach ($DeviceAttribute in $DeviceAttributes.GetEnumerator()) {
+          $DeviceAttributesArray = @()
+          foreach ($DeviceAttribute in $DeviceAttributes.GetEnumerator())
+          {
             $DeviceAttributesArray += @(
               @{
-               'identifier' = $DeviceAttribute.Key
-               'value' = $DeviceAttribute.Value
+                'identifier' = $DeviceAttribute.Key
+                'value' = $DeviceAttribute.Value
               }
             )
           }
@@ -157,7 +158,7 @@
       }
       Default
       {
-        throw "Specify at least one property to update!"
+        throw 'Specify at least one property to update!'
       }
     }
   }

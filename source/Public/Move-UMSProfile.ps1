@@ -41,7 +41,7 @@ function Move-UMSProfile
     $Body = ConvertTo-Json @(
       @{
         id   = $Id
-        type = "profile"
+        type = 'profile'
       }
     )
     $Params = @{

@@ -90,27 +90,45 @@ function Invoke-UMSRestMethod
           {
             400
             {
-              Write-Warning -Message ('Bad Request: The request does not match the API, e.g. it uses the wrong HTTP method. Uri: {0} Method: {1}' -f $Uri, $Method)
+              Write-Warning -Message (
+                'Bad Request: The request does not match the API, e.g. it uses the wrong HTTP method. Uri: {0} Method: {1}' -f
+                $Uri, $Method
+              )
             }
             401
             {
-              Write-Warning -Message ('Unauthorized: The client has not logged in or has sent the wrong credentials. Uri: {0} Method: {1}' -f $Uri, $Method)
+              Write-Warning -Message (
+                'Unauthorized: The client has not logged in or has sent the wrong credentials. Uri: {0} Method: {1}' -f
+                $Uri, $Method
+              )
             }
             404
             {
-              Write-Warning -Message ('Not Found: The endpoint does not exist, it may be misspelled. Uri: {0} Method: {1}' -f $Uri, $Method)
+              Write-Warning -Message (
+                'Not Found: The endpoint does not exist, it may be misspelled. Uri: {0} Method: {1}' -f
+                $Uri, $Method
+              )
             }
             415
             {
-              Write-Warning -Message ('Unsupported Media Type: The body content, e.g. JSON, does not match the Content-Type header or is not well-formed. Uri: {0} Method: {1}' -f $Uri, $Method)
+              Write-Warning -Message (
+                'Unsupported Media Type: The body content, e.g. JSON, does not match the Content-Type header or is not well-formed. Uri: {0} Method: {1}' -f
+                $Uri, $Method
+              )
             }
             500
             {
-              Write-Warning -Message ('Internal Server Error: The server has encountered an error, check the server logfiles catalina.log and stderr. Uri: {0} Method: {1}' -f $Uri, $Method)
+              Write-Warning -Message (
+                'Internal Server Error: The server has encountered an error, check the server logfiles catalina.log and stderr. Uri: {0} Method: {1}' -f
+                $Uri, $Method
+              )
             }
             default
             {
-              Write-Warning -Message ('Some error occured see HTTP status code {0} for further details. Uri: {1} Method: {2}' -f $PSItem.Exception.Response.StatusCode, $Uri, $Method)
+              Write-Warning -Message (
+                'Some error occured see HTTP status code {0} for further details. Uri: {1} Method: {2}' -f
+                $PSItem.Exception.Response.StatusCode, $Uri, $Method
+              )
             }
           }
         }
@@ -129,27 +147,45 @@ function Invoke-UMSRestMethod
           {
             400
             {
-              Write-Warning -Message ('Bad Request: The request does not match the API, e.g. it uses the wrong HTTP method. Uri: {0} Method: {1}' -f $Uri, $Method)
+              Write-Warning -Message (
+                'Bad Request: The request does not match the API, e.g. it uses the wrong HTTP method. Uri: {0} Method: {1}' -f
+                $Uri, $Method
+              )
             }
             401
             {
-              Write-Warning -Message ('Unauthorized: The client has not logged in or has sent the wrong credentials. Uri: {0} Method: {1}' -f $Uri, $Method)
+              Write-Warning -Message (
+                'Unauthorized: The client has not logged in or has sent the wrong credentials. Uri: {0} Method: {1}' -f
+                $Uri, $Method
+              )
             }
             404
             {
-              Write-Warning -Message ('Not Found: The endpoint does not exist, it may be misspelled. Uri: {0} Method: {1}' -f $Uri, $Method)
+              Write-Warning -Message (
+                'Not Found: The endpoint does not exist, it may be misspelled. Uri: {0} Method: {1}' -f
+                $Uri, $Method
+              )
             }
             415
             {
-              Write-Warning -Message ('Unsupported Media Type: The body content, e.g. JSON, does not match the Content-Type header or is not well-formed. Uri: {0} Method: {1}' -f $Uri, $Method)
+              Write-Warning -Message (
+                'Unsupported Media Type: The body content, e.g. JSON, does not match the Content-Type header or is not well-formed. Uri: {0} Method: {1}' -f
+                $Uri, $Method
+              )
             }
             500
             {
-              Write-Warning -Message ('Internal Server Error: The server has encountered an error, check the server logfiles catalina.log and stderr. Uri: {0} Method: {1}' -f $Uri, $Method)
+              Write-Warning -Message (
+                'Internal Server Error: The server has encountered an error, check the server logfiles catalina.log and stderr. Uri: {0} Method: {1}' -f
+                $Uri, $Method
+              )
             }
             default
             {
-              Write-Warning -Message ('Some error occured see HTTP status code {0} for further details. Uri: {1} Method: {2}' -f $PSItem.Exception.Response.StatusCode, $Uri, $Method)
+              Write-Warning -Message (
+                'Some error occured see HTTP status code {0} for further details. Uri: {1} Method: {2}' -f
+                $PSItem.Exception.Response.StatusCode, $Uri, $Method
+              )
             }
           }
         }

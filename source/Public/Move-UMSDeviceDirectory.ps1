@@ -41,7 +41,7 @@ function Move-UMSDeviceDirectory
     $Body = ConvertTo-Json @(
       @{
         id   = $Id
-        type = "tcdirectory"
+        type = 'tcdirectory'
       }
     )
     $Params = @{

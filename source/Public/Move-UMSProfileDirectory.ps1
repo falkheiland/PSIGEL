@@ -41,7 +41,7 @@ function Move-UMSProfileDirectory
     $Body = ConvertTo-Json @(
       @{
         id   = $Id
-        type = "profiledirectory"
+        type = 'profiledirectory'
       }
     )
     $Params = @{
