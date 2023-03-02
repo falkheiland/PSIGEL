@@ -18,5 +18,6 @@
     "PSIGEL",
     "Quickstart",
     "UMSAPI"
-  ]
+  ],
+  "pester.autoRunOnSave": false
 }

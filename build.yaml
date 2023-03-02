@@ -55,11 +55,10 @@ Pester:
         #- tests/Unit/Get-PFStatus.Tests.ps1
     Filter:
       Tag:
-        #- Changelog
-        #- TestQuality
-        #- FunctionalQuality
-        #- helpQuality #TODO
-        -
+        - Changelog
+        - Module
+        #- FunctionalQuality2
+      #- helpQuality #TODO #Get-UMSDevice as template
 
       ExcludeTag:
 
