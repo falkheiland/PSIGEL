@@ -1,5 +1,54 @@
 ﻿function Get-UMSDevice
 {
+  <#
+  .SYNOPSIS
+    Gets information on a device.
+
+  .DESCRIPTION
+    Gets information on a device via API.
+
+  .PARAMETER Computername
+    Computername of the UMS Server
+
+  .PARAMETER TCPPort
+    TCP Port API
+
+  .PARAMETER ApiVersion
+    API Version to use
+
+  .PARAMETER SecurityProtocol
+    Set SSL/TLS protocol
+
+  .PARAMETER WebSession
+    Websession Cookie
+
+  .PARAMETER Filter
+    Optional filter
+
+  .PARAMETER Id
+    ID of the device
+
+  .INPUTS
+    System.Int32
+
+  .OUTPUTS
+    System.Object
+
+  .EXAMPLE
+    PS> Get-UMSDevice -ComputerName 'igelrmserver' -WebSession $WebSession
+
+    Get 'short' information on all devices
+
+  .EXAMPLE
+    PS> Get-UMSDevice -ComputerName 'igelrmserver' -WebSession $WebSession -Id 58 -Filter online
+
+    Get 'online' information on device with ID 195
+
+  .EXAMPLE
+    PS> 195 | Get-UMSDevice -ComputerName 'igelrmserver' -WebSession $WebSession -Filter details
+
+    Get 'details' information on device with ID 195
+  #>
   [CmdletBinding(DefaultParameterSetName = 'All')]
   param
   (
@@ -26,7 +75,8 @@
     [String]
     $Filter = 'short',
 
-    [Parameter(ValueFromPipeline, ValueFromPipelineByPropertyName, ParameterSetName = 'Id')]
+    [Parameter(
+      ValueFromPipeline, ValueFromPipelineByPropertyName, ParameterSetName = 'Id')]
     [Int]
     $Id
   )
