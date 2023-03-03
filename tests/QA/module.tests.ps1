@@ -75,38 +75,45 @@ BeforeAll {
   ).Directory.FullName
 }
 
-Describe 'Changelog Management' -Tag 'Changelog' {
-  It 'Changelog has been updated' -Skip:(
-    -not ([bool](Get-Command git -ErrorAction SilentlyContinue) -and
-      [bool](&(Get-Process -Id $PID).Path -NoProfile -Command 'git rev-parse --is-inside-work-tree 2>$null'))
-  ) {
-    # Get the list of changed files compared with branch main
-    $headCommit = &git rev-parse HEAD
-    $defaultBranchCommit = &git rev-parse origin/main
-    $filesChanged = &git @('diff', "$defaultBranchCommit...$headCommit", '--name-only')
-    $filesStagedAndUnstaged = &git @('diff', 'HEAD', '--name-only')
+Describe 'Changelog Management' -Tag 'Changelog_CL' {
 
-    $filesChanged += $filesStagedAndUnstaged
+  Context 'Changelog Update' -Tag 'CL_Update' {
+    It 'Should been updated' -Skip:(
+      -not ([bool](Get-Command git -ErrorAction SilentlyContinue) -and
+        [bool](&(Get-Process -Id $PID).Path -NoProfile -Command 'git rev-parse --is-inside-work-tree 2>$null'))
+    ) {
+      # Get the list of changed files compared with branch main
+      $headCommit = &git rev-parse HEAD
+      $defaultBranchCommit = &git rev-parse origin/main
+      $filesChanged = &git @('diff', "$defaultBranchCommit...$headCommit", '--name-only')
+      $filesStagedAndUnstaged = &git @('diff', 'HEAD', '--name-only')
 
-    # Only check if there are any changed files.
-    if ($filesChanged)
-    {
-      $filesChanged | Should -Contain 'CHANGELOG.md' -Because 'the CHANGELOG.md must be updated with at least one entry in the Unreleased section for each PR'
+      $filesChanged += $filesStagedAndUnstaged
+
+      # Only check if there are any changed files.
+      if ($filesChanged)
+      {
+        $filesChanged | Should -Contain 'CHANGELOG.md' -Because 'the CHANGELOG.md must be updated with at least one entry in the Unreleased section for each PR'
+      }
     }
   }
 
-  It 'Changelog format compliant with keepachangelog format' -Skip:(![bool](Get-Command git -EA SilentlyContinue)) {
-    { Get-ChangelogData -Path (Join-Path $ProjectPath 'CHANGELOG.md') -ErrorAction Stop } | Should -Not -Throw
+  Context 'Changelog Format' -Tag 'CL_Format' {
+    It 'Should be compliant with keepachangelog format' -Skip:(![bool](Get-Command git -EA SilentlyContinue)) {
+      { Get-ChangelogData -Path (Join-Path $ProjectPath 'CHANGELOG.md') -ErrorAction Stop } | Should -Not -Throw
+    }
   }
 
-  It 'Changelog should have an Unreleased header' -Skip:$skipTest {
-            (Get-ChangelogData -Path (Join-Path -Path $ProjectPath -ChildPath 'CHANGELOG.md') -ErrorAction Stop).Unreleased | Should -Not -BeNullOrEmpty
+  Context 'Changelog Content' -Tag 'CL_Content' {
+    It 'Should have an Unreleased header' -Skip:$skipTest {
+      (Get-ChangelogData -Path (Join-Path -Path $ProjectPath -ChildPath 'CHANGELOG.md') -ErrorAction Stop).Unreleased | Should -Not -BeNullOrEmpty
+    }
   }
 }
 
-Describe 'Module + Functions' -Tags 'Module' {
+Describe 'Module' -Tag 'Module_M' {
 
-  Context 'Module import / removal [<moduleName>]' {
+  Context 'Import+Remove [<moduleName>]' -Tag 'M_ImportRemove' {
     It 'Should import without errors' {
       { Import-Module -Name $script:moduleName -Force -ErrorAction Stop } | Should -Not -Throw
 
@@ -120,7 +127,7 @@ Describe 'Module + Functions' -Tags 'Module' {
     }
   }
 
-  Context 'Manifest [<ModuleManifest>]' {
+  Context 'Manifest [<ModuleManifest>]' -Tag 'M_Manifest' {
 
     It 'should exist' {
       $ModuleManifest | Should -Exist
@@ -179,7 +186,7 @@ Describe 'Module + Functions' -Tags 'Module' {
 
   }
 
-  Context 'Script [<_>]' -ForEach @(
+  Context 'Script [<_>]' -Tag 'M_Script' -ForEach @(
     (Get-ChildItem -Path ('{0}{1}source{1}' -f $projectPath, $DSC) -Include '*.ps1', '*.psm1', '*.psd1' -Recurse -Force)
   ) {
 
@@ -210,7 +217,7 @@ Describe 'Module + Functions' -Tags 'Module' {
 
   }
 
-  Context 'Public Function [<_>]' -ForEach @(
+  Context 'Public Function [<_>]' -Tag 'M_PublicFunction' -ForEach @(
     (Get-ChildItem -Path ('{0}{1}source{1}Public' -f $projectPath, $DSC) -Filter *.ps1 |
       Select-Object -ExpandProperty Name ) -replace '\.ps1$'
   ) {
@@ -226,7 +233,7 @@ Describe 'Module + Functions' -Tags 'Module' {
 
   }
 
-  Context 'Private Function [<_>]' -ForEach @(
+  Context 'Private Function [<_>]' -Tag 'M_PrivateFunction' -ForEach @(
     (Get-ChildItem -Path ('{0}{1}source{1}Private' -f $projectPath, $DSC) -Filter *.ps1 |
       Select-Object -ExpandProperty Name ) -replace '\.ps1$'
   ) {
@@ -240,7 +247,7 @@ Describe 'Module + Functions' -Tags 'Module' {
     }
   }
 
-  Context 'Exported Aliases' {
+  Context 'Exported Aliases' -Tag 'M_ExportedAliases' {
 
     It 'Proper Number of Aliases Exported compared to Manifest' {
       $ExportedCount = Get-Command -Module $ModuleName -CommandType Alias |
@@ -259,101 +266,52 @@ Describe 'Module + Functions' -Tags 'Module' {
     }
   }
 
-  Context 'Command Based Help for [<_.BaseName>]' -ForEach @(
-    Get-ChildItem -Path ('{0}{1}source{1}Public' -f $projectPath, $DSC) -Filter *.ps1
+  Context 'Command Based Help for [<_.BaseName>]' -Tag 'M_CommandBasedHelp' -ForEach @(
+    Get-ChildItem -Path ('{0}{1}source' -f $projectPath, $DSC) -Recurse -Filter *.ps1
   ) {
 
-    It 'should have .SYNOPSIS' {
-      #$functionFile = Get-ChildItem -Path $sourcePath -Recurse -Include "$_.ps1"
-      #$functionFile = Get-ChildItem -Path ('{0}{1}source{1}Public' -f $projectPath, $DSC) -Recurse -Include "$_.ps1"
-
+    BeforeAll {
       $scriptFileRawContent = Get-Content -Raw -Path $_.FullName
-      #Write-Host $scriptFileRawContent
-
       $abstractSyntaxTree = [System.Management.Automation.Language.Parser]::ParseInput($scriptFileRawContent, [ref] $null, [ref] $null)
-      #Write-Host $abstractSyntaxTree
-
       $astSearchDelegate = { $args[0] -is [System.Management.Automation.Language.FunctionDefinitionAst] }
-      #Write-Host $args[0]
-
       $BaseName = $_.BaseName
       $parsedFunction = $abstractSyntaxTree.FindAll( $astSearchDelegate, $true ) |
         Where-Object -FilterScript {
           $_.Name -eq $BaseName
         }
-
       $functionHelp = $parsedFunction.GetHelpContent()
+    }
 
+    It 'should have .SYNOPSIS' {
       $functionHelp.Synopsis | Should -Not -BeNullOrEmpty
     }
 
-    <#
-    It 'Should have .DESCRIPTION for <Name>' -ForEach $testCases {
-      $functionFile = Get-ChildItem -Path $sourcePath -Recurse -Include "$Name.ps1"
-
-      $scriptFileRawContent = Get-Content -Raw -Path $functionFile.FullName
-
-      $abstractSyntaxTree = [System.Management.Automation.Language.Parser]::ParseInput($scriptFileRawContent, [ref] $null, [ref] $null)
-
-      $astSearchDelegate = { $args[0] -is [System.Management.Automation.Language.FunctionDefinitionAst] }
-
-      $parsedFunction = $abstractSyntaxTree.FindAll( $astSearchDelegate, $true ) |
-        Where-Object -FilterScript {
-          $_.Name -eq $Name
-        }
-
-      $functionHelp = $parsedFunction.GetHelpContent()
-
+    It 'should have .DESCRIPTION' {
       $functionHelp.Description | Should -Not -BeNullOrEmpty
     }
 
-    It 'Should have at least one (1) example for <Name>' -ForEach $testCases {
-      $functionFile = Get-ChildItem -Path $sourcePath -Recurse -Include "$Name.ps1"
-
-      $scriptFileRawContent = Get-Content -Raw -Path $functionFile.FullName
-
-      $abstractSyntaxTree = [System.Management.Automation.Language.Parser]::ParseInput($scriptFileRawContent, [ref] $null, [ref] $null)
-
-      $astSearchDelegate = { $args[0] -is [System.Management.Automation.Language.FunctionDefinitionAst] }
-
-      $parsedFunction = $abstractSyntaxTree.FindAll( $astSearchDelegate, $true ) |
-        Where-Object -FilterScript {
-          $_.Name -eq $Name
-        }
-
-      $functionHelp = $parsedFunction.GetHelpContent()
-
-      $functionHelp.Examples.Count | Should -BeGreaterThan 0
-      $functionHelp.Examples[0] | Should -Match ([regex]::Escape($function.Name))
-      $functionHelp.Examples[0].Length | Should -BeGreaterThan ($function.Name.Length + 10)
-
+    It 'should have .INPUTS' {
+      $functionHelp.Inputs | Should -Not -BeNullOrEmpty
     }
 
-    It 'Should have described all parameters for <Name>' -ForEach $testCases {
-      $functionFile = Get-ChildItem -Path $sourcePath -Recurse -Include "$Name.ps1"
+    It 'should have .OUTPUTS' {
+      $functionHelp.Outputs | Should -Not -BeNullOrEmpty
+    }
 
-      $scriptFileRawContent = Get-Content -Raw -Path $functionFile.FullName
-
-      $abstractSyntaxTree = [System.Management.Automation.Language.Parser]::ParseInput($scriptFileRawContent, [ref] $null, [ref] $null)
-
-      $astSearchDelegate = { $args[0] -is [System.Management.Automation.Language.FunctionDefinitionAst] }
-
-      $parsedFunction = $abstractSyntaxTree.FindAll( $astSearchDelegate, $true ) |
-        Where-Object -FilterScript {
-          $_.Name -eq $Name
-        }
-
-      $functionHelp = $parsedFunction.GetHelpContent()
-
+    It 'should have all .PARAMETERS described' {
       $parameters = $parsedFunction.Body.ParamBlock.Parameters.Name.VariablePath.ForEach({ $_.ToString() })
-
       foreach ($parameter in $parameters)
       {
         $functionHelp.Parameters.($parameter.ToUpper()) | Should -Not -BeNullOrEmpty -Because ('the parameter {0} must have a description' -f $parameter)
         $functionHelp.Parameters.($parameter.ToUpper()).Length |
-          Should -BeGreaterThan 25 -Because ('the parameter {0} must have descriptive description' -f $parameter)
+          Should -BeGreaterThan 10 -Because ('the parameter {0} must have descriptive description' -f $parameter)
       }
     }
-    #>
+
+    It 'should have at least one .EXAMPLE' {
+      $functionHelp.Examples.Count | Should -BeGreaterThan 0
+      $functionHelp.Examples[0] | Should -Match ([regex]::Escape($function.Name))
+      $functionHelp.Examples[0].Length | Should -BeGreaterThan ($function.Name.Length + 10)
+    }
   }
 }

@@ -75,11 +75,11 @@
     [String]
     $Filter = 'short',
 
-    [Parameter(
-      ValueFromPipeline, ValueFromPipelineByPropertyName, ParameterSetName = 'Id')]
-    [Int]
+    [Parameter(ValueFromPipeline, ValueFromPipelineByPropertyName, ParameterSetName = 'Id')]
+    [Int[]]
     $Id
   )
+
   Begin
   {
     $UriArray = @($Computername, $TCPPort, $ApiVersion)

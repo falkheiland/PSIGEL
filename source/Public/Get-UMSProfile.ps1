@@ -1,5 +1,51 @@
 ﻿function Get-UMSProfile
 {
+  <#
+  .SYNOPSIS
+    Gets information on a profile.
+
+  .DESCRIPTION
+    Gets information on a profile via API.
+
+  .PARAMETER Computername
+    Computername of the UMS Server
+
+  .PARAMETER TCPPort
+    TCP Port API
+
+  .PARAMETER ApiVersion
+    API Version to use
+
+  .PARAMETER SecurityProtocol
+    Set SSL/TLS protocol
+
+  .PARAMETER WebSession
+    Websession Cookie
+
+  .PARAMETER Id
+    ID of the device
+
+  .INPUTS
+    System.Int32
+
+  .OUTPUTS
+    System.Object
+
+  .EXAMPLE
+    PS> Get-UMSProfile -ComputerName 'igelrmserver' -WebSession $WebSession
+
+    Get all profiles
+
+  .EXAMPLE
+    PS> 90, 92 | Get-UMSProfile -ComputerName 'igelrmserver' -WebSession $WebSession
+
+    Get profile with ID 90 and 92
+
+  .EXAMPLE
+    PS> Get-UMSProfile -ComputerName 'igelrmserver' -WebSession $WebSession -Id 90, 92
+
+    Get profile with ID 90 and 92
+  #>
   [CmdletBinding(DefaultParameterSetName = 'All')]
   param
   (
@@ -23,7 +69,7 @@
     $WebSession,
 
     [Parameter(ValueFromPipeline, ValueFromPipelineByPropertyName, ParameterSetName = 'Id')]
-    [Int]
+    [Int[]]
     $Id
   )
 
@@ -31,9 +77,6 @@
   {
     $UriArray = @($Computername, $TCPPort, $ApiVersion)
     $BaseURL = ('https://{0}:{1}/umsapi/v{2}/profiles' -f $UriArray)
-  }
-  Process
-  {
     $Params = @{
       WebSession       = $WebSession
       Method           = 'Get'
@@ -41,37 +84,32 @@
       Headers          = @{ }
       SecurityProtocol = ($SecurityProtocol -join ',')
     }
-    Switch ($PsCmdlet.ParameterSetName)
+  }
+  Process
+  {
+    $result = Switch ($PsCmdlet.ParameterSetName)
     {
       'All'
       {
-        $Params.Add('Uri', ('{0}' -f $BaseURL))
-        $APIObjectColl = (Invoke-UMSRestMethod @Params).SyncRoot
+        $ParamsPS = @{
+          Uri = ('{0}' -f $BaseURL)
+        }
+        (Invoke-UMSRestMethod @Params @ParamsPS).SyncRoot
       }
       'Id'
       {
-        $Params.Add('Uri', ('{0}/{1}' -f $BaseURL, $Id))
-        $APIObjectColl = Invoke-UMSRestMethod @Params
+        foreach ($item in $Id)
+        {
+          $ParamsPS = @{
+            Uri = ('{0}/{1}' -f $BaseURL, $item)
+          }
+          Invoke-UMSRestMethod @Params @ParamsPS
+        }
       }
     }
-    $Result = foreach ($APIObject in $APIObjectColl)
-    {
-      $Properties = [ordered]@{
-        'FirmwareId'        = [Int]$APIObject.firmwareID
-        'IsMasterProfile'   = [System.Convert]::ToBoolean($APIObject.isMasterProfile)
-        'OverridesSessions' = [System.Convert]::ToBoolean($APIObject.overridesSessions)
-        'Id'                = [Int]$APIObject.id
-        'Name'              = [String]$APIObject.name
-        'ParentId'          = [Int]$APIObject.parentID
-        'MovedToBin'        = [System.Convert]::ToBoolean($APIObject.movedToBin)
-        'ObjectType'        = [String]$APIObject.objectType
-      }
-      New-Object psobject -Property $Properties
-    }
-    $Result
+    $result
   }
   End
   {
   }
 }
-

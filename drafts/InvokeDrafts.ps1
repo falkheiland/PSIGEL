@@ -50,6 +50,21 @@ $WebSession = New-UMSAPICookie
 $PSDefaultParameterValues.Add('*-UMS*:WebSession', $WebSession)
 #endregion
 
+#region Get-UMSProfile
+$params = @{
+  #Id = 90 #90, 92, 93
+  Id = @(90, 92, 93)
+  #Whatif  = $false
+  #Confirm = $false
+}
+$ProfileColl = Get-UMSProfile @params
+#$ProfileColl = 90, 92, 93 | Get-UMSProfile @params
+$ProfileColl
+#endregion
+
+
+<#
+
 #region Get-UMSFirmware
 $params = @{
   #Whatif  = $false
@@ -58,8 +73,6 @@ $params = @{
 $FirmwareColl = Get-UMSFirmware @params
 $FirmwareColl
 #endregion
-
-<#
 
 #region https://igelcommunity.slack.com/archives/C8GP9JHQE/p1677627574428399
 (Get-UMSDevice -Filter details).where{
