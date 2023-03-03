@@ -57,10 +57,6 @@
     [Int]
     $TCPPort = 8443,
 
-    [ValidateSet(3)]
-    [Int]
-    $ApiVersion = 3,
-
     [ValidateSet('Tls12', 'Tls11', 'Tls', 'Ssl3')]
     [String[]]
     $SecurityProtocol = 'Tls12',
@@ -75,8 +71,7 @@
 
   Begin
   {
-    $UriArray = @($Computername, $TCPPort, $ApiVersion)
-    $BaseURL = ('https://{0}:{1}/umsapi/v{2}/profiles' -f $UriArray)
+    $BaseURL = ('https://{0}:{1}/umsapi/v3/profiles' -f $Computername, $TCPPort)
     $Params = @{
       WebSession       = $WebSession
       Method           = 'Get'
