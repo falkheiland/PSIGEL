@@ -1,0 +1,113 @@
+site_name: PSIGEL documentation
+theme:
+  name: material
+  palette:
+    # light mode
+    - media: "(prefers-color-scheme: light)"
+      scheme: cyan
+      primary: cyan
+      accent: cyan
+      toggle:
+        icon: material/lightbulb
+        name: Switch to dark mode
+    # dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: cyan
+      accent: cyan
+      toggle:
+        icon: material/lightbulb-outline
+        name: Switch to light mode
+  # https://squidfunk.github.io/mkdocs-material/setup/changing-the-fonts/
+  # TODO: https://github.com/squidfunk/mkdocs-material/issues/739#issuecomment-1036027153
+  font: false
+  #font:
+  #  code: Rubik
+  icon: 
+    repo: fontawesome/brands/github
+  features:
+    - navigation.instant
+    - navigation.tracking
+    #- navigation.expand
+    - navigation.top
+    - navigation.sections
+    - navigation.indexes
+    - search.highlight
+    - content.code.copy
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/IGEL-Community/PSIGEL
+      name: Project Github Page
+    - icon: fontawesome/brands/slack
+      link: http://igelcommunity.slack.com/
+      name: IGEL Community Slack
+    - icon: fontawesome/brands/github
+      link: https://github.com/falkheiland
+      name: Author Github Page
+    - icon: fontawesome/brands/mastodon
+      link: https://fosstodon.org/@falkheiland
+      name: Author Mastodon Page
+    - icon: fontawesome/brands/linkedin
+      link: https://www.linkedin.com/in/falkheiland/
+      name: Author Linkedin Page
+  generator: false
+copyright: Copyright &copy; 2023 Falk Heiland
+repo_url: https://github.com/IGEL-Community/PSIGEL
+repo_name: IGEL-Community/PSIGEL
+markdown_extensions:
+  - admonition
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+extra_css:
+  - media/stylesheets/extra.css
+# nav:
+#   - README: README.md
+#   - CHANGELOG: CHANGELOG.md
+#   - Guides:
+#     - Installation: guides/Installation.md
+#     - Scripting with PSIGEL: guides/Scripting-with-PSIGEL.md
+#   - Functions:
+#     - reference/en-US/Get-UMSDevice.md
+#     - reference/en-US/Get-UMSDeviceAssignment.md
+#     - reference/en-US/Get-UMSDeviceDirectory.md
+#     - reference/en-US/Get-UMSDeviceDirectoryAssignment.md
+#     - reference/en-US/Get-UMSDirectoryRecursive.md
+#     - reference/en-US/Get-UMSFirmware.md
+#     - reference/en-US/Get-UMSProfile.md
+#     - reference/en-US/Get-UMSProfileAssignment.md
+#     - reference/en-US/Get-UMSProfileDirectory.md
+#     - reference/en-US/Get-UMSStatus.md
+#     - reference/en-US/Move-UMSDevice.md
+#     - reference/en-US/Move-UMSDeviceDirectory.md
+#     - reference/en-US/Move-UMSProfile.md
+#     - reference/en-US/Move-UMSProfileDirectory.md
+#     - reference/en-US/New-UMSAPICookie.md
+#     - reference/en-US/New-UMSDevice.md
+#     - reference/en-US/New-UMSDeviceDirectory.md
+#     - reference/en-US/New-UMSProfileAssignment.md
+#     - reference/en-US/New-UMSProfileDirectory.md
+#     - reference/en-US/Remove-UMSAPICookie.md
+#     - reference/en-US/Remove-UMSDevice.md
+#     - reference/en-US/Remove-UMSDeviceDirectory.md
+#     - reference/en-US/Remove-UMSProfile.md
+#     - reference/en-US/Remove-UMSProfileAssignment.md
+#     - reference/en-US/Remove-UMSProfileDirectory.md
+#     - reference/en-US/Reset-UMSDevice.md
+#     - reference/en-US/Restart-UMSDevice.md
+#     - reference/en-US/Send-UMSDeviceSetting.md
+#     - reference/en-US/Start-UMSDevice.md
+#     - reference/en-US/Stop-UMSDevice.md
+#     - reference/en-US/Update-UMSDevice.md
+#     - reference/en-US/Update-UMSDeviceDirectory.md
+#     - reference/en-US/Update-UMSProfile.md
+#     - reference/en-US/Update-UMSProfileDirectory.md
