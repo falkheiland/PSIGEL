@@ -29,13 +29,13 @@ via [IGEL Knowledgebase](https://kb.igel.com/igelimi-v3/en/imi-manual-2723216.ht
 
 ## Guides
 
-- [Installation](https://falkheiland.github.io/PSIGEL/guides/01-Installation/)
-- [Basic Usage](https://falkheiland.github.io/PSIGEL/guides/02-Basic-Usage/)
-- [Scripting with PSIGEL](https://falkheiland.github.io/PSIGEL/guides/03-Scripting-with-PSIGEL/)
+- [Installation](/guides/01-Installation/)
+- [Basic Usage](/guides/02-Basic-Usage/)
+- [Scripting with PSIGEL](/guides/03-Scripting-with-PSIGEL/)
 
 ## Functions
 
-- [Functions](https://falkheiland.github.io/PSIGEL/functions/en-US/01-Index/)
+- [Functions](/functions/en-US/01-Index/)
 
 ## Links
   - [Presentation on IGEL Community Youtube Channel](https://www.youtube.com/watch?v=JbBUVjOyhrQ&t=3652s)
