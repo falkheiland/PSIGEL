@@ -1,4 +1,5 @@
 site_name: PSIGEL documentation
+site_url: https://falkheiland.github.io/PSIGEL/
 theme:
   name: material
   palette:
