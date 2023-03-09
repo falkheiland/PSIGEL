@@ -1,0 +1,79 @@
+site_name: PSIGEL documentation
+site_url: https://falkheiland.github.io/PSIGEL
+site_author: Falk Heiland
+repo_url: https://github.com/falkheiland/PSIGEL
+repo_name: falkheiland/PSIGEL
+edit_uri: blob/main/docs/
+copyright: Copyright &copy; 2023 Falk Heiland
+theme:
+  name: material
+  palette:
+    # light mode
+    - media: "(prefers-color-scheme: light)"
+      scheme: cyan
+      primary: cyan
+      accent: cyan
+      toggle:
+        icon: material/lightbulb
+        name: Switch to dark mode
+    # dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: cyan
+      accent: cyan
+      toggle:
+        icon: material/lightbulb-outline
+        name: Switch to light mode
+  # https://squidfunk.github.io/mkdocs-material/setup/changing-the-fonts/
+  # TODO: https://github.com/squidfunk/mkdocs-material/issues/739#issuecomment-1036027153
+  font: false
+  #font:
+  #  code: Rubik
+  icon: 
+    repo: fontawesome/brands/github
+    edit: material/pencil 
+    view: material/eye
+  features:
+    - navigation.instant
+    - navigation.tracking
+    #- navigation.expand
+    - navigation.top
+    - navigation.sections
+    - navigation.indexes
+    - search.highlight
+    - content.code.copy
+    - content.action.edit
+    - content.action.view
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/IGEL-Community/PSIGEL
+      name: Project Github Page
+    - icon: fontawesome/brands/slack
+      link: http://igelcommunity.slack.com/
+      name: IGEL Community Slack
+    - icon: fontawesome/brands/github
+      link: https://github.com/falkheiland
+      name: Author Github Page
+    - icon: fontawesome/brands/mastodon
+      link: https://fosstodon.org/@falkheiland
+      name: Author Mastodon Page
+    - icon: fontawesome/brands/linkedin
+      link: https://www.linkedin.com/in/falkheiland/
+      name: Author Linkedin Page
+  generator: false
+markdown_extensions:
+  - admonition
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+extra_css:
+  - media/stylesheets/extra.css
