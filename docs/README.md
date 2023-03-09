@@ -29,18 +29,19 @@ via [IGEL Knowledgebase](https://kb.igel.com/igelimi-v3/en/imi-manual-2723216.ht
 
 ## Guides
 
-- [Installation](/guides/01-Installation/)
-- [Basic Usage](/guides/02-Basic-Usage/)
-- [Scripting with PSIGEL](/guides/03-Scripting-with-PSIGEL/)
+- [Installation](https://falkheiland.github.io/PSIGEL/guides/01-Installation/)
+- [Installation](https://falkheiland.github.io/PSIGEL/guides/01-Installation/)
+- [Basic Usage](https://falkheiland.github.io/PSIGEL/guides/02-Basic-Usage/)
+- [Scripting with PSIGEL](https://falkheiland.github.io/PSIGEL/guides/03-Scripting-with-PSIGEL/)
 
 ## Functions
 
-- [Functions](/functions/en-US/01-Index/)
+- [Functions](https://falkheiland.github.io/PSIGEL/functions/en-US/01-Index/)
 
 ## Links
   - [Presentation on IGEL Community Youtube Channel](https://www.youtube.com/watch?v=JbBUVjOyhrQ&t=3652s)
   - [igelexperts.com](https://www.igelexperts.com/category/igel/psigel/)
-- [Changelog](CHANGELOG)
+- [Changelog](https://falkheiland.github.io/PSIGEL/CHANGELOG)
 
 ## Maintainer
 
@@ -51,7 +52,7 @@ via [IGEL Knowledgebase](https://kb.igel.com/igelimi-v3/en/imi-manual-2723216.ht
 
 ## License
 
-This project is [licensed under the MIT License](LICENSE).
+This project is [licensed under the MIT License](https://falkheiland.github.io/PSIGEL/LICENSE).
 
 [![MIT licensed][mit-badge]][mit-license]
 
