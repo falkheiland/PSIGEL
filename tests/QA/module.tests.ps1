@@ -1,24 +1,17 @@
 BeforeDiscovery {
-  $script:DSC = [IO.Path]::DirectorySeparatorChar
-  $projectPath = "$($PSScriptRoot)\..\.." | Convert-Path
+}
 
-  <#
-        If the QA tests are run outside of the build script (e.g with Invoke-Pester)
-        the parent scope has not set the variable $ProjectName.
-    #>
+BeforeAll {
+  $ProjectPath = "$($PSScriptRoot)\..\.." | Convert-Path
   if (-not $ProjectName)
   {
     # Assuming project folder name is project name.
-    $ProjectName = Get-SamplerProjectName -BuildRoot $projectPath
+    $ProjectName = Get-SamplerProjectName -BuildRoot $ProjectPath
   }
-
-  $script:moduleName = $ProjectName
-
-  Remove-Module -Name $script:moduleName -Force -ErrorAction SilentlyContinue
-
-  $mut = Get-Module -Name $script:moduleName -ListAvailable |
-    Select-Object -First 1 |
-    Import-Module -Force -ErrorAction Stop -PassThru
+  $ModuleName = $ProjectName
+  $ModuleManifest = Resolve-Path ('{0}\source\{1}.psd1' -f $ProjectPath, $ProjectName)
+  $TestModuleManifest = Test-ModuleManifest -Path $ModuleManifest -ErrorAction Stop -WarningAction SilentlyContinue
+  $TestModuleManifestGUID = '4834fbc2-faf6-469c-b685-0195954fd878'
 
   if (Get-Command -Name Invoke-ScriptAnalyzer -ErrorAction SilentlyContinue)
   {
@@ -35,44 +28,7 @@ BeforeDiscovery {
       throw 'ScriptAnalyzer not found!'
     }
   }
-  $script:PSSASettingsFile = ('{0}{1}PSScriptAnalyzerSettings.psd1' -f $projectPath, $DSC)
-}
-
-BeforeAll {
-  # Convert-Path required for PS7 or Join-Path fails
-  $projectPath = "$($PSScriptRoot)\..\.." | Convert-Path
-
-  <#
-        If the QA tests are run outside of the build script (e.g with Invoke-Pester)
-        the parent scope has not set the variable $ProjectName.
-    #>
-  if (-not $ProjectName)
-  {
-    # Assuming project folder name is project name.
-    $ProjectName = Get-SamplerProjectName -BuildRoot $projectPath
-  }
-
-  $script:moduleName = $ProjectName
-  $script:ModuleManifest = Resolve-Path ('{0}{1}source{1}{2}.psd1' -f $projectPath, $DSC, $ProjectName)
-  $script:TestModuleManifest = Test-ModuleManifest -Path $ModuleManifest -ErrorAction Stop -WarningAction SilentlyContinue
-  $script:TestModuleManifestGUID = '4834fbc2-faf6-469c-b685-0195954fd878'
-
-  $sourcePath = (
-    Get-ChildItem -Path $projectPath\*\*.psd1 |
-      Where-Object -FilterScript {
-                ($_.Directory.Name -match 'source|src' -or $_.Directory.Name -eq $_.BaseName) `
-          -and $(
-          try
-          {
-            Test-ModuleManifest -Path $_.FullName -ErrorAction Stop
-          }
-          catch
-          {
-            $false
-          }
-        )
-      }
-  ).Directory.FullName
+  $PSSASettingsFile = Resolve-Path ('{0}\PSScriptAnalyzerSettings.psd1' -f $ProjectPath)
 }
 
 Describe 'Changelog Management' -Tag 'Changelog_CL' {
@@ -93,37 +49,36 @@ Describe 'Changelog Management' -Tag 'Changelog_CL' {
       # Only check if there are any changed files.
       if ($filesChanged)
       {
-        $filesChanged | Should -Contain 'CHANGELOG.md' -Because 'the CHANGELOG.md must be updated with at least one entry in the Unreleased section for each PR'
+        $filesChanged |
+          Should -Contain 'docs/CHANGELOG.md' -Because 'the CHANGELOG.md must be updated with at least one entry in the Unreleased section for each PR'
       }
     }
   }
 
   Context 'Changelog Format' -Tag 'CL_Format' {
     It 'Should be compliant with keepachangelog format' -Skip:(![bool](Get-Command git -EA SilentlyContinue)) {
-      { Get-ChangelogData -Path (Join-Path $ProjectPath 'CHANGELOG.md') -ErrorAction Stop } | Should -Not -Throw
+      { Get-ChangelogData -Path (Join-Path $ProjectPath 'docs\CHANGELOG.md') -ErrorAction Stop } | Should -Not -Throw
     }
   }
 
   Context 'Changelog Content' -Tag 'CL_Content' {
     It 'Should have an Unreleased header' -Skip:$skipTest {
-      (Get-ChangelogData -Path (Join-Path -Path $ProjectPath -ChildPath 'CHANGELOG.md') -ErrorAction Stop).Unreleased | Should -Not -BeNullOrEmpty
+      (Get-ChangelogData -Path (Join-Path -Path $ProjectPath -ChildPath 'docs\CHANGELOG.md') -ErrorAction Stop).Unreleased | Should -Not -BeNullOrEmpty
     }
   }
 }
 
 Describe 'Module' -Tag 'Module_M' {
 
-  Context 'Import+Remove [<moduleName>]' -Tag 'M_ImportRemove' {
+  Context 'Import+Remove [<ModuleName>]' -Tag 'M_ImportRemove' {
     It 'Should import without errors' {
-      { Import-Module -Name $script:moduleName -Force -ErrorAction Stop } | Should -Not -Throw
-
-      Get-Module -Name $script:moduleName | Should -Not -BeNullOrEmpty
+      { Import-Module -Name $ModuleName -Force -ErrorAction Stop } | Should -Not -Throw
+      Get-Module -Name $ModuleName | Should -Not -BeNullOrEmpty
     }
 
     It 'Should remove without error' {
-      { Remove-Module -Name $script:moduleName -ErrorAction Stop } | Should -Not -Throw
-
-      Get-Module $script:moduleName | Should -BeNullOrEmpty
+      { Remove-Module -Name $ModuleName -ErrorAction Stop } | Should -Not -Throw
+      Get-Module -Name $ModuleName | Should -BeNullOrEmpty
     }
   }
 
@@ -157,7 +112,7 @@ Describe 'Module' -Tag 'Module_M' {
       $TestModuleManifest.PrivateData.PSData.LicenseUri | Should -Not -BeNullOrEmpty
     }
 
-    It "Manifest Root Module should be $('{0}.psm1' -f $ModuleName)" {
+    It 'Manifest Root Module should be [<ModuleName>.psm1]' {
       $TestModuleManifest.RootModule | Should -Be ('{0}.psm1' -f $ModuleName)
     }
 
@@ -179,7 +134,7 @@ Describe 'Module' -Tag 'Module_M' {
     It 'Proper Number of Functions Exported compared to Files' {
       $ExportedCount = Get-Command -Module $ModuleName -CommandType Function |
         Measure-Object | Select-Object -ExpandProperty Count
-      $FileCount = Get-ChildItem -Path ('{0}{1}source{1}Public' -f $projectPath, $DSC) -Filter *.ps1 |
+      $FileCount = Get-ChildItem -Path ('{0}\source\Public' -f $projectPath) -Filter *.ps1 |
         Measure-Object | Select-Object -ExpandProperty Count
       $ExportedCount | Should -Be $FileCount
     }
@@ -187,7 +142,7 @@ Describe 'Module' -Tag 'Module_M' {
   }
 
   Context 'Script [<_>]' -Tag 'M_Script' -ForEach @(
-    (Get-ChildItem -Path ('{0}{1}source{1}' -f $projectPath, $DSC) -Include '*.ps1', '*.psm1', '*.psd1' -Recurse -Force)
+    (Get-ChildItem -Path ('{0}\source\' -f $ProjectPath) -Include '*.ps1', '*.psm1', '*.psd1' -Recurse -Force)
   ) {
 
     It 'should exist' {
@@ -201,10 +156,11 @@ Describe 'Module' -Tag 'Module_M' {
       $ErrorColl.Count | Should -Be 0
     }
 
-    It 'should pass Script Analyzer' -Skip:(-not $scriptAnalyzerRules) {
-      if (Test-Path $pssaSettingsFile)
+    #It 'should pass Script Analyzer' -Skip:(-not $scriptAnalyzerRules) {
+    It 'should pass Script Analyzer' {
+      if (Test-Path $PSSASettingsFile)
       {
-        $pssaResult = (Invoke-ScriptAnalyzer -Path $_.FullName -Settings $pssaSettingsFile)
+        $pssaResult = (Invoke-ScriptAnalyzer -Path $_.FullName -Settings $PSSASettingsFile)
       }
       else
       {
@@ -218,7 +174,7 @@ Describe 'Module' -Tag 'Module_M' {
   }
 
   Context 'Public Function [<_>]' -Tag 'M_PublicFunction' -ForEach @(
-    (Get-ChildItem -Path ('{0}{1}source{1}Public' -f $projectPath, $DSC) -Filter *.ps1 |
+    (Get-ChildItem -Path ('{0}\source\Public' -f $projectPath) -Filter *.ps1 |
       Select-Object -ExpandProperty Name ) -replace '\.ps1$'
   ) {
 
@@ -228,13 +184,13 @@ Describe 'Module' -Tag 'Module_M' {
     }
 
     It 'should have a unit test' {
-      Get-ChildItem -Path ('{0}{1}tests' -f $projectPath, $DSC) -Recurse -Include "$_.Tests.ps1" | Should -Not -BeNullOrEmpty
+      Get-ChildItem -Path ('{0}\tests' -f $projectPath) -Recurse -Include "$_.Tests.ps1" | Should -Not -BeNullOrEmpty
     }
 
   }
 
   Context 'Private Function [<_>]' -Tag 'M_PrivateFunction' -ForEach @(
-    (Get-ChildItem -Path ('{0}{1}source{1}Private' -f $projectPath, $DSC) -Filter *.ps1 |
+    (Get-ChildItem -Path ('{0}\source\Private' -f $projectPath) -Filter *.ps1 |
       Select-Object -ExpandProperty Name ) -replace '\.ps1$'
   ) {
 
@@ -243,7 +199,7 @@ Describe 'Module' -Tag 'Module_M' {
     }
 
     It 'should have a unit test' {
-      Get-ChildItem -Path ('{0}{1}tests' -f $projectPath, $DSC) -Recurse -Include "$_.Tests.ps1" | Should -Not -BeNullOrEmpty
+      Get-ChildItem -Path ('{0}\tests' -f $projectPath) -Recurse -Include "$_.Tests.ps1" | Should -Not -BeNullOrEmpty
     }
   }
 
@@ -252,22 +208,18 @@ Describe 'Module' -Tag 'Module_M' {
     It 'Proper Number of Aliases Exported compared to Manifest' {
       $ExportedCount = Get-Command -Module $ModuleName -CommandType Alias |
         Measure-Object | Select-Object -ExpandProperty Count
-      $TestModuleManifestCount = $TestModuleManifest.ExportedAliases.Count
-
-      $ExportedCount | Should -Be $TestModuleManifestCount
+      $ExportedCount | Should -Be $TestModuleManifest.ExportedAliases.Count
     }
 
     It 'Proper Number of Aliases Exported compared to Files' {
-      $AliasCount = Get-ChildItem -Path ('{0}{1}source{1}Public' -f $projectPath, $DSC) -Filter *.ps1 |
+      $AliasCount = Get-ChildItem -Path ('{0}\source\Public' -f $projectPath) -Filter *.ps1 |
         Select-String 'New-Alias' | Measure-Object | Select-Object -ExpandProperty Count
-      $TestModuleManifestCount = $TestModuleManifest.ExportedAliases.Count
-
-      $AliasCount | Should -Be $TestModuleManifestCount
+      $AliasCount | Should -Be $TestModuleManifest.ExportedAliases.Count
     }
   }
 
-  Context 'Command Based Help for [<_.BaseName>]' -Tag 'M_CommandBasedHelp' -ForEach @(
-    Get-ChildItem -Path ('{0}{1}source' -f $projectPath, $DSC) -Recurse -Filter *.ps1
+  Context 'Command Based Help for [<_.BaseName>]' -Tag 'M_CommandBasedHelp' -Foreach @(
+    Get-ChildItem -Path ('{0}\source' -f $projectPath) -Recurse -Filter *.ps1
   ) {
 
     BeforeAll {
@@ -314,4 +266,5 @@ Describe 'Module' -Tag 'Module_M' {
       $functionHelp.Examples[0].Length | Should -BeGreaterThan ($function.Name.Length + 10)
     }
   }
+
 }
