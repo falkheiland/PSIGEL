@@ -7,7 +7,7 @@
 [![GitHub stars][github-start-badge]][github-psigel]
 [![IGEL-Community Slack][slack-badge]][slack-igelcommunity]
 
-![Logo](/media/pics/PSIGEL_1280_320.png)
+![Logo](https://falkheiland.github.io/PSIGEL/media/pics/PSIGEL_1280_320.png)
 
 ## Overview
 

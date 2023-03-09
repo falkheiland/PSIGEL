@@ -1,5 +1,10 @@
 site_name: PSIGEL documentation
-site_url: https://falkheiland.github.io/PSIGEL/
+site_url: https://falkheiland.github.io/PSIGEL
+site_author: Falk Heiland
+repo_url: https://github.com/falkheiland/PSIGEL
+repo_name: falkheiland/PSIGEL
+edit_uri: blob/main/docs/
+copyright: Copyright &copy; 2023 Falk Heiland
 theme:
   name: material
   palette:
@@ -26,6 +31,8 @@ theme:
   #  code: Rubik
   icon: 
     repo: fontawesome/brands/github
+    edit: material/pencil 
+    view: material/eye
   features:
     - navigation.instant
     - navigation.tracking
@@ -35,6 +42,8 @@ theme:
     - navigation.indexes
     - search.highlight
     - content.code.copy
+    - content.action.edit
+    - content.action.view
 extra:
   social:
     - icon: fontawesome/brands/github
@@ -53,9 +62,6 @@ extra:
       link: https://www.linkedin.com/in/falkheiland/
       name: Author Linkedin Page
   generator: false
-copyright: Copyright &copy; 2023 Falk Heiland
-repo_url: https://github.com/IGEL-Community/PSIGEL
-repo_name: IGEL-Community/PSIGEL
 markdown_extensions:
   - admonition
   - pymdownx.highlight:
@@ -71,44 +77,3 @@ markdown_extensions:
           format: !!python/name:pymdownx.superfences.fence_code_format
 extra_css:
   - media/stylesheets/extra.css
-# nav:
-#   - README: README.md
-#   - CHANGELOG: CHANGELOG.md
-#   - Guides:
-#     - Installation: guides/Installation.md
-#     - Scripting with PSIGEL: guides/Scripting-with-PSIGEL.md
-#   - Functions:
-#     - reference/en-US/Get-UMSDevice.md
-#     - reference/en-US/Get-UMSDeviceAssignment.md
-#     - reference/en-US/Get-UMSDeviceDirectory.md
-#     - reference/en-US/Get-UMSDeviceDirectoryAssignment.md
-#     - reference/en-US/Get-UMSDirectoryRecursive.md
-#     - reference/en-US/Get-UMSFirmware.md
-#     - reference/en-US/Get-UMSProfile.md
-#     - reference/en-US/Get-UMSProfileAssignment.md
-#     - reference/en-US/Get-UMSProfileDirectory.md
-#     - reference/en-US/Get-UMSStatus.md
-#     - reference/en-US/Move-UMSDevice.md
-#     - reference/en-US/Move-UMSDeviceDirectory.md
-#     - reference/en-US/Move-UMSProfile.md
-#     - reference/en-US/Move-UMSProfileDirectory.md
-#     - reference/en-US/New-UMSAPICookie.md
-#     - reference/en-US/New-UMSDevice.md
-#     - reference/en-US/New-UMSDeviceDirectory.md
-#     - reference/en-US/New-UMSProfileAssignment.md
-#     - reference/en-US/New-UMSProfileDirectory.md
-#     - reference/en-US/Remove-UMSAPICookie.md
-#     - reference/en-US/Remove-UMSDevice.md
-#     - reference/en-US/Remove-UMSDeviceDirectory.md
-#     - reference/en-US/Remove-UMSProfile.md
-#     - reference/en-US/Remove-UMSProfileAssignment.md
-#     - reference/en-US/Remove-UMSProfileDirectory.md
-#     - reference/en-US/Reset-UMSDevice.md
-#     - reference/en-US/Restart-UMSDevice.md
-#     - reference/en-US/Send-UMSDeviceSetting.md
-#     - reference/en-US/Start-UMSDevice.md
-#     - reference/en-US/Stop-UMSDevice.md
-#     - reference/en-US/Update-UMSDevice.md
-#     - reference/en-US/Update-UMSDeviceDirectory.md
-#     - reference/en-US/Update-UMSProfile.md
-#     - reference/en-US/Update-UMSProfileDirectory.md
