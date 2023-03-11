@@ -2,7 +2,8 @@ BeforeDiscovery {
 }
 
 BeforeAll {
-  $ProjectPath = "$($PSScriptRoot)\..\.." | Convert-Path
+  $ProjectPath = Resolve-Path ('{0}\..\..' -f $PSScriptRoot)
+  #$ProjectPath = "$($PSScriptRoot)\..\.." | Convert-Path
   if (-not $ProjectName)
   {
     # Assuming project folder name is project name.
@@ -218,7 +219,7 @@ Describe 'Module' -Tag 'Module_M' {
     }
   }
 
-  Context 'Command Based Help for [<_.BaseName>]' -Tag 'M_CommandBasedHelp' -Foreach @(
+  Context 'Command Based Help for [<_.BaseName>]' -Tag 'M_CommandBasedHelp' -ForEach @(
     Get-ChildItem -Path ('{0}\source' -f $projectPath) -Recurse -Filter *.ps1
   ) {
 

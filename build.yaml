@@ -46,9 +46,10 @@ Pester:
     Run:
       Path:
         #- tests/QA/
-        - tests/QA/module.tests.ps1
+        #- tests/QA/module.tests.ps1
         #- tests/Unit/
-        #- tests/Unit/Get-UMSProfile.Tests.ps1
+        - tests/Unit/Get-UMSProfile.Tests.ps1
+        - tests/Unit/Get-UMSDevice.Tests.ps1
         #- tests/Unit/Get-PF*.Tests.ps1
         #- tests/Integration
       ExcludePath:
@@ -65,19 +66,19 @@ Pester:
 
     Output:
       Verbosity: Detailed #Normal
-    # CodeCoverage:
-    #   Path:
-    #     # Tests for New-PF* in ToDo
-    #     #- source/Public/
-    #     - source/Public/Get-UMSProfile.ps1
-    #   #- source/Public/Get-UMS*.ps1
-    #   #- source/Public/Update-UMS*.ps1
-    #   #- source/Public/Remove-UMS*.ps1
-    #   OutputFormat: "JaCoCo"
-    #   CoveragePercentTarget: 85
-    #   OutputPath: "tests/Data/coverage.xml"
-    #   OutputEncoding:
-    #   ExcludeTests:
+    CodeCoverage:
+      Path:
+        # Tests for New-PF* in ToDo
+        #- source/Public/
+        - source/Public/Get-UMSProfile.ps1
+      #- source/Public/Get-UMS*.ps1
+      #- source/Public/Update-UMS*.ps1
+      #- source/Public/Remove-UMS*.ps1
+      OutputFormat: "JaCoCo"
+      CoveragePercentTarget: 85
+      OutputPath: "tests/Data/coverage.xml"
+      OutputEncoding:
+      ExcludeTests:
     TestResult:
       OutputFormat: NUnitXML
       OutputPath:
