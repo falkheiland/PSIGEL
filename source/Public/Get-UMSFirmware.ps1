@@ -1,5 +1,44 @@
 ﻿function Get-UMSFirmware
 {
+  <#
+  .SYNOPSIS
+    Gets information on a firmware.
+
+  .DESCRIPTION
+    Gets information on a firmware via API.
+
+  .PARAMETER Computername
+    Computername of the UMS Server
+
+  .PARAMETER TCPPort
+    TCP Port API
+
+  .PARAMETER SecurityProtocol
+    Set SSL/TLS protocol
+
+  .PARAMETER WebSession
+    Websession Cookie
+
+  .PARAMETER Id
+    ID of the device
+
+  .INPUTS
+    System.Int32
+
+  .OUTPUTS
+    System.Object
+
+  .EXAMPLE
+    PS> Get-UMSFirmware -ComputerName 'igelrmserver' -WebSession $WebSession
+
+    Get information on all firmwares
+
+  .EXAMPLE
+    PS> Get-UMSFirmware -ComputerName 'igelrmserver' -WebSession $WebSession -Id 2
+
+    Get information on firmware with ID 2
+
+  #>
   [CmdletBinding(DefaultParameterSetName = 'All')]
   param
   (
@@ -11,10 +50,6 @@
     [Int]
     $TCPPort = 8443,
 
-    [ValidateSet(3)]
-    [Int]
-    $ApiVersion = 3,
-
     [ValidateSet('Tls12', 'Tls11', 'Tls', 'Ssl3')]
     [String[]]
     $SecurityProtocol = 'Tls12',
@@ -23,17 +58,13 @@
     $WebSession,
 
     [Parameter(ValueFromPipeline, ValueFromPipelineByPropertyName, ParameterSetName = 'Id')]
-    [Int]
+    [Int[]]
     $Id
   )
 
   Begin
   {
-    $UriArray = @($Computername, $TCPPort, $ApiVersion)
-    $BaseURL = ('https://{0}:{1}/umsapi/v{2}/firmwares' -f $UriArray)
-  }
-  Process
-  {
+    $BaseURL = ('https://{0}:{1}/umsapi/v3/firmwares' -f $Computername, $TCPPort)
     $Params = @{
       WebSession       = $WebSession
       Method           = 'Get'
@@ -41,30 +72,30 @@
       Headers          = @{ }
       SecurityProtocol = ($SecurityProtocol -join ',')
     }
-    Switch ($PsCmdlet.ParameterSetName)
+  }
+  Process
+  {
+    $result = Switch ($PsCmdlet.ParameterSetName)
     {
       'All'
       {
-        $Params.Add('Uri', ('{0}' -f $BaseURL))
-        $APIObjectColl = (Invoke-UMSRestMethod @Params).FwResource
+        $ParamsPS = @{
+          Uri = ('{0}' -f $BaseURL)
+        }
+        (Invoke-UMSRestMethod @Params @ParamsPS).FwResource
       }
       'Id'
       {
-        $Params.Add('Uri', ('{0}/{1}' -f $BaseURL, $Id))
-        $APIObjectColl = Invoke-UMSRestMethod @Params
+        foreach ($item in $Id)
+        {
+          $ParamsPS = @{
+            Uri = ('{0}/{1}' -f $BaseURL, $item)
+          }
+          Invoke-UMSRestMethod @Params @ParamsPS
+        }
       }
     }
-    $Result = foreach ($APIObject in $APIObjectColl)
-    {
-      $Properties = [ordered]@{
-        'Id'           = [Int]$APIObject.id
-        'Product'      = [String]$APIObject.product
-        'Version'      = [String]$APIObject.version
-        'FirmwareType' = [String]$APIObject.firmwareType
-      }
-      New-Object psobject -Property $Properties
-    }
-    $Result
+    $result
   }
   End
   {

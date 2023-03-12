@@ -1,305 +1,345 @@
-$Script:ProjectRoot = Resolve-Path ('{0}\..' -f $PSScriptRoot)
-$Script:ModuleRoot = Split-Path (Resolve-Path ('{0}\*\*.psm1' -f $Script:ProjectRoot))
-$Script:ModuleName = Split-Path $Script:ModuleRoot -Leaf
-$Script:ModuleManifest = Resolve-Path ('{0}/{1}.psd1' -f $Script:ModuleRoot, $Script:ModuleName)
-$Script:ScriptName = $MyInvocation.MyCommand.Name.Replace(".Tests.ps1", "")
-Import-Module ( '{0}/{1}.psm1' -f $Script:ModuleRoot, $Script:ModuleName) -Force
-
-Describe "$Script:ScriptName Unit Tests" -Tag 'UnitTests' {
-
-  Context "Basics" {
-
-    It "Is valid Powershell (Has no script errors)" {
-      $Content = Get-Content -Path ( '{0}\Public\{1}.ps1' -f $Script:ModuleRoot, $Script:ScriptName) -ErrorAction Stop
-      $ErrorColl = $Null
-      $Null = [System.Management.Automation.PSParser]::Tokenize($Content, [ref]$ErrorColl)
-      $ErrorColl | Should -HaveCount 0
-    }
-
-    [object[]]$params = (Get-ChildItem function:\$Script:ScriptName).Parameters.Keys
-    $KnownParameters = 'Computername', 'TCPPort', 'ApiVersion', 'SecurityProtocol', 'WebSession', 'Filter', 'Id'
-
-    It "Should contain our specific parameters" {
-      (@(Compare-Object -ReferenceObject $KnownParameters -DifferenceObject $params -IncludeEqual |
-          Where-Object SideIndicator -eq "==").Count) | Should Be $KnownParameters.Count
-    }
+BeforeAll {
+  $ProjectPath = Resolve-Path ('{0}\..\..' -f $PSScriptRoot)
+  if (-not $ProjectName)
+  {
+    # Assuming project folder name is project name.
+    $ProjectName = Get-SamplerProjectName -BuildRoot $ProjectPath
   }
-
-  InModuleScope $Script:ModuleName {
-
-    $PSDefaultParameterValues = @{
-      '*:WebSession'   = New-MockObject -Type 'System.Management.Automation.PSCustomObject'
-      '*:Computername' = 'igelrmserver.acme.org'
-    }
-
-    Context "General Execution" {
-
-      Mock 'Invoke-UMSRestMethod' { }
-
-      It 'Get-UMSDeviceDirectory Should not throw' {
-        { Get-UMSDeviceDirectory } | Should -Not -Throw
-      }
-
-      It 'Get-UMSDeviceDirectory -ApiVersion 10 Stop Should throw' {
-        { Get-UMSDeviceDirectory -ApiVersion 10 -ErrorAction Stop } | Should -Throw
-      }
-
-    }
-
-    Context "ParameterSetName All" {
-
-      Mock 'Invoke-UMSRestMethod' {
-        [pscustomobject]@{
-          SyncRoot = @{
-            id         = '2'
-            name       = 'ProfileName'
-            parentID   = '20'
-            movedToBin = 'false'
-            objectType = 'tcdirectory'
-          }
-        }
-      }
-
-      $Result = Get-UMSDeviceDirectory
-
-      It 'Assert Invoke-UMSRestMethod is called exactly 1 time' {
-        $AMCParams = @{
-          CommandName = 'Invoke-UMSRestMethod'
-          Times       = 1
-          Exactly     = $true
-        }
-        Assert-MockCalled @AMCParams
-      }
-
-      It 'Result should have type pscustomobject' {
-        $Result | Should -HaveType ([pscustomobject])
-      }
-
-      It 'Result should have 1 element' {
-        @($Result).Count | Should BeExactly 1
-      }
-
-      It 'Result.Id should be exactly 2' {
-        $Result.Id | Should Be 2
-      }
-
-      It 'Result.Id should have type [Int]' {
-        $Result.Id | Should -HaveType [Int]
-      }
-    }
-
-    Context "ParameterSetName ID" {
-
-      Mock 'Invoke-UMSRestMethod' {
-        [pscustomobject]@{
-          id         = '2'
-          name       = 'ProfileName'
-          parentID   = '20'
-          movedToBin = 'false'
-          objectType = 'tcdirectory'
-        }
-      }
-
-      $Result = Get-UMSDeviceDirectory -Id 2
-
-      It 'Assert Invoke-UMSRestMethod is called exactly 1 time' {
-        $AMCParams = @{
-          CommandName = 'Invoke-UMSRestMethod'
-          Times       = 1
-          Exactly     = $true
-        }
-        Assert-MockCalled @AMCParams
-      }
-
-      It 'Result should have type pscustomobject' {
-        $Result | Should -HaveType ([pscustomobject])
-      }
-
-      It 'Result should have 1 element' {
-        @($Result).Count | Should BeExactly 1
-      }
-
-      It 'Result.Id should be exactly 2' {
-        $Result.Id | Should Be 2
-      }
-
-      It 'Result.Id should have type [Int]' {
-        $Result.Id | Should -HaveType [Int]
-      }
-    }
-
-    Context "Filter children" {
-
-      Mock 'Invoke-UMSRestMethod' {
-        [pscustomobject]@{
-          DirectoryChildren = @(
-            @{
-              objectType = 'profile'
-              id         = '2'
-            }
-            @{
-              objectType = 'profile'
-              id         = '2'
-            }
-          )
-          id                = '2'
-          name              = 'ProfileName'
-          parentID          = '20'
-          movedToBin        = 'false'
-          objectType        = 'tcdirectory'
-        }
-      }
-      Mock 'New-UMSFilterString' { }
-
-      $Result = Get-UMSDeviceDirectory -Id 2 -Filter children
-
-      It 'Assert New-UMSFilterString is called exactly 1 time' {
-        $AMCParams = @{
-          CommandName = 'New-UMSFilterString'
-          Times       = 1
-          Exactly     = $true
-        }
-        Assert-MockCalled @AMCParams
-      }
-
-      It 'Assert Invoke-UMSRestMethod is called exactly 1 time' {
-        $AMCParams = @{
-          CommandName = 'Invoke-UMSRestMethod'
-          Times       = 1
-          Exactly     = $true
-        }
-        Assert-MockCalled @AMCParams
-      }
-
-      It 'Result should have type pscustomobject' {
-        $Result | Should -HaveType ([pscustomobject])
-      }
-
-      It 'Result should have 1 element' {
-        @($Result).Count | Should BeExactly 1
-      }
-
-      It 'Result.DirectoryChildren[0].Id should be exactly 2' {
-        $Result.DirectoryChildren[0].Id | Should Be 2
-      }
-
-      It 'Result.DirectoryChildren[0].Id should have type [Int]' {
-        $Result.DirectoryChildren[0].Id | Should -HaveType [Int]
-      }
-    }
-
-    Context "Error Handling" {
-      Mock 'Invoke-UMSRestMethod' { throw 'Error' }
-
-      It 'should throw Error' {
-        { Get-UMSDeviceDirectory } | Should throw 'Error'
-      }
-
-      It 'Result should be null or empty' {
-        $Result | Should BeNullOrEmpty
-      }
-    }
-  }
+  $ModuleRoot = Split-Path (Resolve-Path ('{0}\source\{1}.psm1' -f $ProjectPath, $ProjectName))
+  $ModuleName = $ProjectName
+  $FunctionName = ($PSCommandPath.Split('\')[-1]).Replace('.Tests.ps1', '')
+  . ('{0}\Public\{1}' -f $ModuleRoot, $FunctionName)
+  . ('{0}\Private\Invoke-UMSRestMethod.ps1' -f $ModuleRoot)
+  . ('{0}\Private\New-UMSFilterString.ps1' -f $ModuleRoot)
+  $ContentColl = Get-Content -Path ( '{0}\Public\{1}.ps1' -f $ModuleRoot, $FunctionName) -ErrorAction Stop
+  [object[]]$ActualParameters = (Get-ChildItem function:\$FunctionName).Parameters.Keys
+  $KnownParameters = @(
+    'Computername',
+    'TCPPort',
+    'SecurityProtocol',
+    'WebSession',
+    'Filter',
+    'Id'
+  )
+  $FilterString = 'children'
 }
 
-Describe "$Script:ScriptName Integration Tests" -Tag "IntegrationTests" {
-  $Cfg = Import-PowerShellDataFile -Path ('{0}\Tests\Config.psd1' -f $Script:ProjectRoot)
-  if ($IsLinux)
-  {
-    $Credential = Import-Clixml -Path $Cfg.CredPathWsl
+Describe 'Unit Tests' -Tag 'UnitTests_UT' {
+
+  BeforeAll {
+    $PSDefaultParameterValues = @{
+      '*:WebSession'   = 'WebSession'
+      '*:Computername' = 'Computername'
+      '*:Confirm'      = $false
+    }
+    $Mock1 = 'Invoke-UMSRestMethod'
+    $Mock1ObjSyncRoot = [PSCustomObject]@{
+      SyncRoot = @(
+        [PSCustomObject]@{
+          Id     = 1
+          String = 'String1'
+        },
+        [PSCustomObject]@{
+          Id     = 2
+          String = 'String2'
+        }
+      )
+    }
+    $Mock1Obj = [PSCustomObject]@(
+      [PSCustomObject]@{
+        Id     = 1
+        String = 'String1'
+      },
+      [PSCustomObject]@{
+        Id     = 2
+        String = 'String2'
+      }
+    )
   }
-  else
-  {
-    $Credential = Import-Clixml -Path $Cfg.CredPath
+
+  Context 'Parameter' -Tag 'UT_Basics' {
+    It '[<FunctionName>] should contain parameters [<KnownParameters>]' {
+      (@(Compare-Object -ReferenceObject $KnownParameters -DifferenceObject $ActualParameters -IncludeEqual |
+          Where-Object SideIndicator -EQ '==').Count) | Should -Be $KnownParameters.Count
+    }
   }
 
-  $PSDefaultParameterValues = @{
-    '*-UMS*:Credential'       = $Credential
-    '*-UMS*:Computername'     = $Cfg.Computername
-    '*-UMS*:TCPPort'          = $Cfg.TCPPort
-    '*-UMS*:SecurityProtocol' = $Cfg.SecurityProtocol
-    '*-UMS*:Confirm'          = $False
+  Context 'ParameterSetName [All]' -Tag 'UT_PSN_All' {
+
+    BeforeAll {
+      Mock $Mock1 {
+        $Mock1ObjSyncRoot
+      }
+    }
+
+    Context 'No $Filter' {
+
+      BeforeAll {
+        $result = . $FunctionName
+      }
+
+      It 'Assert <Mock1> is called exactly <Mock1ObjSyncRoot.Count> time' {
+        $params = @{
+          CommandName = $Mock1
+          Times       = $Mock1ObjSyncRoot.Count
+          Exactly     = $true
+          Scope       = 'Context'
+        }
+        Should -Invoke @params
+      }
+
+      It '$result.Count | Should -BeExactly <Mock1ObjSyncRoot.SyncRoot.Count>' {
+        $result.Count | Should -BeExactly $Mock1ObjSyncRoot.SyncRoot.Count
+      }
+
+    }
+
+    Context '$Filter = <Filter>' {
+
+      BeforeAll {
+        $result = . $FunctionName -Filter $FilterString
+      }
+
+      It 'Assert <Mock1> is called exactly <Mock1ObjSyncRoot.Count> time' {
+        $params = @{
+          CommandName = $Mock1
+          Times       = $Mock1ObjSyncRoot.Count
+          Exactly     = $true
+          Scope       = 'Context'
+        }
+        Should -Invoke @params
+      }
+
+      It '$result.Count | Should -BeExactly <Mock1ObjSyncRoot.SyncRoot.Count>' {
+        $result.Count | Should -BeExactly $Mock1ObjSyncRoot.SyncRoot.Count
+      }
+
+    }
+
   }
 
-  $WebSession = New-UMSAPICookie
-  $PSDefaultParameterValues += @{
-    '*-UMS*:WebSession' = $WebSession
+  Context 'ParameterSetName [Id]' {
+
+    BeforeAll {
+      Mock $Mock1 {
+        $Mock1Obj
+      }
+    }
+
+    Context 'No Pipeline' {
+
+      BeforeAll {
+        $result = . $FunctionName -Id 1, 2
+      }
+
+      It 'Assert <Mock1> is called exactly <Mock1Obj.Count> times' {
+        $params = @{
+          CommandName = $Mock1
+          Times       = $Mock1Obj.Count
+          Exactly     = $true
+          Scope       = 'Context'
+        }
+        Should -Invoke @params
+      }
+
+      It '$result[1].Id | Should -BeExactly <Mock1Obj[1].Id>' {
+        $result[1].Id | Should -BeExactly $Mock1Obj[1].Id
+      }
+
+    }
+
+    Context 'No Pipeline $Filter = <Filter>' {
+
+      BeforeAll {
+        $result = . $FunctionName -Id 1, 2 -Filter $FilterString
+      }
+
+      It 'Assert <Mock1> is called exactly <Mock1Obj.Count> times' {
+        $params = @{
+          CommandName = $Mock1
+          Times       = $Mock1Obj.Count
+          Exactly     = $true
+          Scope       = 'Context'
+        }
+        Should -Invoke @params
+      }
+
+      It '$result[1].Id | Should -BeExactly <Mock1Obj[1].Id>' {
+        $result[1].Id | Should -BeExactly $Mock1Obj[1].Id
+      }
+
+    }
+
+    Context 'ValueFromPipeline' {
+
+      BeforeAll {
+        $result = 1, 2 | . $FunctionName
+      }
+
+      It 'Assert <Mock1> is called exactly <Mock1Obj.Count> times' {
+        $params = @{
+          CommandName = $Mock1
+          Times       = $Mock1Obj.Count
+          Exactly     = $true
+          Scope       = 'Context'
+        }
+        Should -Invoke @params
+      }
+
+      It '$result[1].Id | Should -BeExactly <Mock1Obj[1].Id>' {
+        $result[1].Id | Should -BeExactly $Mock1Obj[1].Id
+      }
+
+    }
+
+    Context 'ValueFromPipelineByPropertyName' {
+
+      BeforeAll {
+        $InputObj = $Mock1Obj # the same structure and values, not the same thing though
+        $result = $InputObj | . $FunctionName
+      }
+
+      It 'Assert <Mock1> is called exactly 2 times' {
+        $params = @{
+          CommandName = $Mock1
+          Times       = $Mock1Obj.Count
+          Exactly     = $true
+          Scope       = 'Context'
+        }
+        Should -Invoke @params
+      }
+
+      It '$result[1].Id | Should -BeExactly <Mock1Obj[1].Id>' {
+        $result[1].Id | Should -BeExactly $Mock1Obj[1].Id
+      }
+
+    }
+
   }
 
-  Context "ParameterSetName Default" {
+  Context 'ParameterSetName <_>' -Foreach $AddSwitchParameters {
 
-    $TestCfg = (($Cfg.Tests).where{ $_.Name -eq $ScriptName }).ParameterSets.Default
-
-    It "doesn't throw" {
-      { $Script:Result = @(
-          Get-UMSDeviceDirectory
-        ) } | Should Not Throw
+    BeforeAll {
+      Mock 'Invoke-UMSRestMethod' {
+        [PSCustomObject]@{
+          Items = @(
+            [PSCustomObject]@{
+              Id     = 1
+              String = 'String1'
+            },
+            [PSCustomObject]@{
+              Id     = 2
+              String = 'String2'
+            }
+          )
+        }
+      }
     }
 
-    It 'Result should not be null or empty' {
-      $Result | Should not BeNullOrEmpty
+    Context 'No Pipeline' {
+
+      BeforeAll {
+        $params = @{
+          Id = 1, 2
+          $_ = $true
+        }
+        $result = . $FunctionName @params
+      }
+
+      It 'Assert Invoke-UMSRestMethod is called exactly 2 times' {
+        $params = @{
+          CommandName = 'Invoke-UMSRestMethod'
+          Times       = 2
+          Exactly     = $true
+          Scope       = 'Context'
+        }
+        Should -Invoke @params
+      }
+
+      It "$result[1].Id | Should -Be 2" {
+        $result[1].Id | Should -Be 2
+      }
+
     }
 
-    It 'Result[0].Id should have type [Int]' {
-      $Result[0].Id | Should -HaveType [Int]
+    Context 'ValueFromPipeline' {
+
+      BeforeAll {
+        $params = @{
+          $_ = $true
+        }
+        $result = 1, 2 | . $FunctionName @params
+      }
+
+      It 'Assert Invoke-UMSRestMethod is called exactly 2 times' {
+        $params = @{
+          CommandName = 'Invoke-UMSRestMethod'
+          Times       = 2
+          Exactly     = $true
+          Scope       = 'Context'
+        }
+        Should -Invoke @params
+      }
+
+      It "$result[1].Id | Should -Be 2" {
+        $result[1].Id | Should -Be 2
+      }
+
     }
 
-    It 'Result[0].Name should have type [String]' {
-      $Result[0].Name | Should -HaveType [String]
+    Context 'ValueFromPipelineByPropertyName' {
+
+      BeforeAll {
+        $params = @{
+          $_ = $true
+        }
+        $result = @(
+          [PSCustomObject]@{
+            Id     = 1
+            String = 'String1'
+          },
+          [PSCustomObject]@{
+            Id     = 2
+            String = 'String2'
+          }
+        ) | . $FunctionName @params
+      }
+
+      It 'Assert Invoke-UMSRestMethod<Mock1> is called exactly 2 times' {
+        $params = @{
+          CommandName = 'Invoke-UMSRestMethod'
+          Times       = 2
+          Exactly     = $true
+          Scope       = 'Context'
+        }
+        Should -Invoke @params
+      }
+
+      It "$result[1].Id | Should -Be 2" {
+        $result[1].Id | Should -Be 2
+      }
+
     }
 
-    It 'Result[0].MovedToBin should have type [Bool]' {
-      $Result[0].MovedToBin | Should -HaveType [Bool]
+  }
+
+  Context 'Error Handling' {
+
+    BeforeAll {
+      Mock $Mock1 {
+        throw 'Error'
+      }
     }
 
-    It "Result should be Equivalent to Expected" {
-      [array]$Expected = foreach ($item In $TestCfg.Expected)
+    It 'Should throw Error' {
       {
-        New-Object psobject -Property $item
-      }
-      Assert-Equivalent -Actual $Result -Expected $Expected -Options @{
-        ExcludedPaths = $TestCfg.Options.ExcludedPaths
-      }
+        . $FunctionName
+      } | Should -Throw 'Error'
     }
+
   }
 
-  Context "ParameterSetName Children" {
+}
 
-    $Script:Result = ''
-    $TestCfg = (($Cfg.Tests).where{ $_.Name -eq $ScriptName }).ParameterSets.Children
-
-    It "doesn't throw" {
-      $Params1 = $TestCfg.Params1
-      { $Script:Result = @(
-          Get-UMSDeviceDirectory @Params1
-        ) } | Should Not Throw
-    }
-
-    It 'Result should not be null or empty' {
-      $Result | Should not BeNullOrEmpty
-    }
-
-    It 'Result[0].Id should have type [Int]' {
-      $Result[0].Id | Should -HaveType [Int]
-    }
-
-    It 'Result[0].Name should have type [String]' {
-      $Result[0].Name | Should -HaveType [String]
-    }
-
-    It 'Result[0].MovedToBin should have type [Bool]' {
-      $Result[0].MovedToBin | Should -HaveType [Bool]
-    }
-
-    It "Result should be Equivalent to Expected" {
-      [array]$Expected = foreach ($item In $TestCfg.Expected)
-      {
-        New-Object psobject -Property $item
-      }
-      Assert-Equivalent -Actual $Result -Expected $Expected -Options @{
-        ExcludedPaths = $TestCfg.Options.ExcludedPaths
-      }
-    }
-  }
-
+AfterAll {
 }

@@ -48,8 +48,8 @@ Pester:
         #- tests/QA/
         #- tests/QA/module.tests.ps1
         #- tests/Unit/
-        - tests/Unit/Get-UMSProfile.Tests.ps1
-        - tests/Unit/Get-UMSDevice.Tests.ps1
+        #- tests/Unit/Get-UMSProfile.Tests.ps1
+        - tests/Unit/Get-UMSDeviceDirectory.Tests.ps1
         #- tests/Unit/Get-PF*.Tests.ps1
         #- tests/Integration
       ExcludePath:
@@ -70,12 +70,13 @@ Pester:
       Path:
         # Tests for New-PF* in ToDo
         #- source/Public/
-        - source/Public/Get-UMSProfile.ps1
+        #- source/Public/Get-UMSProfile.ps1
+        - source/Public/Get-UMSDeviceDirectory.ps1
       #- source/Public/Get-UMS*.ps1
       #- source/Public/Update-UMS*.ps1
       #- source/Public/Remove-UMS*.ps1
       OutputFormat: "JaCoCo"
-      CoveragePercentTarget: 85
+      CoveragePercentTarget: 100 #85
       OutputPath: "tests/Data/coverage.xml"
       OutputEncoding:
       ExcludeTests:

@@ -1,27 +1,3 @@
-BeforeDiscovery {
-  # $DSC = [IO.Path]::DirectorySeparatorChar
-  # $ProjectRoot = Resolve-Path ('{0}{1}..{1}..' -f $PSScriptRoot, $DSC)
-  # $ModuleRoot = Split-Path (Resolve-Path ('{0}{1}*{1}*.psm1' -f $ProjectRoot, $DSC))
-  # $ModuleName = (Get-ChildItem $ProjectRoot\*\*.psd1 | Where-Object {
-  # ($_.Directory.Name -match 'source|src' -or $_.Directory.Name -eq $_.BaseName) -and
-  #     $(try
-  #       {
-  #         Test-ModuleManifest $_.FullName -ErrorAction Stop
-  #       }
-  #       catch
-  #       {
-  #         $false
-  #       }) }
-  # ).BaseName
-  # $FunctionName = ($PSCommandPath.Split("$DSC")[-1]).Replace('.Tests.ps1', '')
-  # $AddSwitchParameters = @(
-  #   'Components',
-  #   'Documents',
-  #   'Floors',
-  #   'History'
-  # )
-}
-
 BeforeAll {
   $ProjectPath = Resolve-Path ('{0}\..\..' -f $PSScriptRoot)
   if (-not $ProjectName)
@@ -34,6 +10,7 @@ BeforeAll {
   $FunctionName = ($PSCommandPath.Split('\')[-1]).Replace('.Tests.ps1', '')
   . ('{0}\Public\{1}' -f $ModuleRoot, $FunctionName)
   . ('{0}\Private\Invoke-UMSRestMethod.ps1' -f $ModuleRoot)
+  . ('{0}\Private\New-UMSFilterString.ps1' -f $ModuleRoot)
   $ContentColl = Get-Content -Path ( '{0}\Public\{1}.ps1' -f $ModuleRoot, $FunctionName) -ErrorAction Stop
   [object[]]$ActualParameters = (Get-ChildItem function:\$FunctionName).Parameters.Keys
   $KnownParameters = @(
@@ -42,8 +19,6 @@ BeforeAll {
     'SecurityProtocol',
     'WebSession',
     'Id'
-  )
-  $AddSwitchParameters = @(
   )
 }
 
@@ -190,7 +165,7 @@ Describe 'Unit Tests' -Tag 'UnitTests_UT' {
 
   }
 
-  Context 'ParameterSetName <_>' -ForEach $AddSwitchParameters {
+  Context 'ParameterSetName <_>' -Foreach $AddSwitchParameters {
 
     BeforeAll {
       Mock 'Invoke-UMSRestMethod' {
@@ -304,7 +279,7 @@ Describe 'Unit Tests' -Tag 'UnitTests_UT' {
       }
     }
 
-    It 'should throw Error' {
+    It 'Should throw Error' {
       {
         . $FunctionName
       } | Should -Throw 'Error'

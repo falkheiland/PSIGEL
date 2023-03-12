@@ -13,9 +13,6 @@
   .PARAMETER TCPPort
     TCP Port API
 
-  .PARAMETER ApiVersion
-    API Version to use
-
   .PARAMETER SecurityProtocol
     Set SSL/TLS protocol
 

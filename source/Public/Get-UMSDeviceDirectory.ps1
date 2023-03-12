@@ -1,5 +1,51 @@
 ﻿function Get-UMSDeviceDirectory
 {
+  <#
+  .SYNOPSIS
+    Gets information on a device directory.
+
+  .DESCRIPTION
+    Gets information on a device directory via API.
+
+  .PARAMETER Computername
+    Computername of the UMS Server
+
+  .PARAMETER TCPPort
+    TCP Port API
+
+  .PARAMETER SecurityProtocol
+    Set SSL/TLS protocol
+
+  .PARAMETER WebSession
+    Websession Cookie
+
+  .PARAMETER Filter
+    Optional filter
+
+  .PARAMETER Id
+    ID of the device
+
+  .INPUTS
+    System.Int32
+
+  .OUTPUTS
+    System.Object
+
+  .EXAMPLE
+    PS> Get-UMSDeviceDirectory -ComputerName 'igelrmserver' -WebSession $WebSession
+
+    Get information on all device directories
+
+  .EXAMPLE
+    PS> Get-UMSDeviceDirectory -ComputerName 'igelrmserver' -WebSession $WebSession -Id 71
+
+    Get information on device directory with ID 71
+
+  .EXAMPLE
+    PS> 71 | Get-UMSDeviceDirectory -ComputerName 'igelrmserver' -WebSession $WebSession -Filter children
+
+    Get information on device directory with ID 71, including its child directories
+  #>
   [cmdletbinding(DefaultParameterSetName = 'All')]
   param
   (
@@ -10,10 +56,6 @@
     [ValidateRange(0, 65535)]
     [Int]
     $TCPPort = 8443,
-
-    [ValidateSet(3)]
-    [Int]
-    $ApiVersion = 3,
 
     [ValidateSet('Tls12', 'Tls11', 'Tls', 'Ssl3')]
     [String[]]
@@ -27,21 +69,13 @@
     $Filter,
 
     [Parameter(ValueFromPipeline, ValueFromPipelineByPropertyName, ParameterSetName = 'Id')]
-    [Int]
+    [Int[]]
     $Id
   )
 
   Begin
   {
-    $UriArray = @($Computername, $TCPPort, $ApiVersion)
-    $BaseURL = ('https://{0}:{1}/umsapi/v{2}/directories/tcdirectories' -f $UriArray)
-    if ($Filter)
-    {
-      $FilterString = New-UMSFilterString -Filter $Filter
-    }
-  }
-  Process
-  {
+    $BaseURL = ('https://{0}:{1}/umsapi/v3/directories/tcdirectories' -f $Computername, $TCPPort)
     $Params = @{
       WebSession       = $WebSession
       Method           = 'Get'
@@ -49,48 +83,36 @@
       Headers          = @{ }
       SecurityProtocol = ($SecurityProtocol -join ',')
     }
-    Switch ($PSCmdlet.ParameterSetName)
+    if ($true -eq $PSBoundParameters.Filter)
+    {
+      #'true'
+      $FilterString = New-UMSFilterString -Filter $Filter
+      #$FilterString
+    }
+  }
+  Process
+  {
+    $result = Switch ($PsCmdlet.ParameterSetName)
     {
       'All'
       {
-        $Params.Add('Uri', ('{0}{1}' -f $BaseURL, $FilterString))
-        $APIObjectColl = (Invoke-UMSRestMethod @Params).SyncRoot
+        $ParamsPS = @{
+          Uri = (('{0}{1}' -f $BaseURL, $FilterString))
+        }
+        (Invoke-UMSRestMethod @Params @ParamsPS).SyncRoot
       }
       'Id'
       {
-        $Params.Add('Uri', ('{0}/{1}{2}' -f $BaseURL, $Id, $FilterString))
-        $APIObjectColl = Invoke-UMSRestMethod @Params
-      }
-    }
-    $Result = foreach ($APIObject in $APIObjectColl)
-    {
-      $Properties = [ordered]@{
-        'Id'         = [Int]$APIObject.id
-        'Name'       = [String]$APIObject.name
-        'ParentId'   = [Int]$APIObject.parentID
-        'MovedToBin' = [System.Convert]::ToBoolean($APIObject.movedToBin)
-        'ObjectType' = [String]$APIObject.objectType
-      }
-      switch ($Filter)
-      {
-        'children'
+        foreach ($item in $Id)
         {
-          $DirectoryChildren = foreach ($child in $APIObject.DirectoryChildren)
-          {
-            $ChildProperties = [ordered]@{
-              'ObjectType' = [String]$child.objectType
-              'Id'         = [Int]$child.id
-            }
-            New-Object psobject -Property $ChildProperties
+          $ParamsPS = @{
+            Uri = ('{0}/{1}{2}' -f $BaseURL, $item, $FilterString)
           }
-          $Properties += [ordered]@{
-            'DirectoryChildren' = $DirectoryChildren
-          }
+          Invoke-UMSRestMethod @Params @ParamsPS
         }
       }
-      New-Object psobject -Property $Properties
     }
-    $Result
+    $result
   }
   End
   {
