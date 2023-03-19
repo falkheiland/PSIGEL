@@ -1,5 +1,6 @@
 # PSIGEL
 
+[![Open in Dev Containers][dev-container-badge]][dev-container]
 [![GitHub last commit][github-commit-badge]][github-psigel]
 [![GitHub release (latest by date)][github-release-badge]][github-psigel]
 [![PowerShell Gallery Version][psgallery-v-badge]][powershell-gallery]
@@ -55,6 +56,8 @@ This project is [licensed under the MIT License](https://falkheiland.github.io/P
 
 [![MIT licensed][mit-badge]][mit-license]
 
+[dev-container-badge]: https://img.shields.io/static/v1?label=Dev%20Containers&message=Open&color=blue&logo=visualstudiocode
+[dev-container]: https://vscode.dev/redirect?url=vscode://ms-vscode-remote.remote-containers/cloneInVolume?url=https://github.com/falkheiland/PSIGEL
 [psgallery-dl-badge]: https://img.shields.io/powershellgallery/dt/PSIGEL.svg?logo=powershell
 [powershell-gallery]: https://www.powershellgallery.com/packages/PSIGEL/
 [mit-badge]: https://img.shields.io/github/license/IGEL-Community/PSIGEL?logo=github
