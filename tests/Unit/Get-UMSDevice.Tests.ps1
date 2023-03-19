@@ -7,8 +7,8 @@
   }
   $ModuleRoot = Split-Path (Resolve-Path ('{0}\source\{1}.psm1' -f $ProjectPath, $ProjectName))
   $ModuleName = $ProjectName
-  $FunctionName = ($PSCommandPath.Split('\')[-1]).Replace('.Tests.ps1', '')
-  . ('{0}\Public\{1}' -f $ModuleRoot, $FunctionName)
+  $FunctionName = (($PSCommandPath -split '\\|/')[-1]).Replace('.Tests.ps1', '')
+  . ('{0}\Public\{1}.ps1' -f $ModuleRoot, $FunctionName)
   . ('{0}\Private\Invoke-UMSRestMethod.ps1' -f $ModuleRoot)
   . ('{0}\Private\New-UMSFilterString.ps1' -f $ModuleRoot)
   $ContentColl = Get-Content -Path ( '{0}\Public\{1}.ps1' -f $ModuleRoot, $FunctionName) -ErrorAction Stop
