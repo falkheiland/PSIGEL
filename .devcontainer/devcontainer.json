@@ -1,0 +1,25 @@
+{
+  "image": "mcr.microsoft.com/powershell:lts-ubuntu-jammy",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "streetsidesoftware.code-spell-checker",
+        "streetsidesoftware.code-spell-checker-german",
+        "oderwat.indent-rainbow",
+        "TylerLeonhardt.vscode-inline-values-powershell",
+        "yzhang.markdown-all-in-one",
+        "bierner.markdown-preview-github-styles",
+        "ms-vscode.powershell",
+        "medo64.render-crlf"
+      ]
+    }
+  },
+  "features": {
+    "ghcr.io/devcontainers/features/git:1": {}
+  },
+  "runArgs": [
+    "--env-file",
+    ".devcontainer/devcontainer.env"
+  ],
+  "forwardPorts": []
+}

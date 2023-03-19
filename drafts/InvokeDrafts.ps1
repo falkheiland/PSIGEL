@@ -1,15 +1,9 @@
 #region init
-#requires -version 5.0
-
-$DSC = [IO.Path]::DirectorySeparatorChar
 
 if (!(Test-Path .\InvokeDrafts.ps1))
 {
   throw 'Set Location to the path where this script is located!'
 }
-
-$Config = Import-PowerShellDataFile -Path ('.{0}config.psd1' -f $DSC) -ErrorAction Stop
-$PSDefaultParameterValues = $Config.PSDPV
 
 #Get public and private function definition files.
 $Public = @( Get-ChildItem -Path ..\source\Public\*.ps1 -ErrorAction SilentlyContinue )
@@ -33,22 +27,33 @@ Foreach ($import in @($Public + $Private))
 # Use build for draft
 # Import-Module -FullyQualifiedName $Config.ModuleBuildPath -Force -ErrorAction Stop -Verbose
 
-if ($PSEdition -eq 'core' -and (-Not $IsWindows))
-{
-  # PS7 on Linux OR MacOS
-  # Dont use the following method in production, since on linux the clixml file is not encrypted
-  $Credential = (Import-Clixml -Path $Config.CredentialPath.Linux)
-}
-else
-{
-  #PS7 on Windows or Windows PowerShell 5.1
-  $Credential = (Import-Clixml -Path $Config.CredentialPath.Windows)
+$Config = (Get-Item -Path Env:PSIGEL_*).foreach{
+  @{$_.Key = $_.Value }
 }
 
-$PSDefaultParameterValues.Add('New-UMSAPICookie:Credential', $Credential)
+$CredentialParams = @{
+  TypeName     = 'System.Management.Automation.PSCredential'
+  ArgumentList = @(
+    $Config.PSIGEL_Username
+    (ConvertTo-SecureString -String $Config.PSIGEL_Password -AsPlainText -Force)
+  )
+}
+$Credential = New-Object @CredentialParams
+$Credential
+
+
+$PSDefaultParameterValues = @{
+  'New-UMSAPICookie:Credential' = $Credential
+  '*-UMS*:Computername'         = $Config.PSIGEL_Computername
+  '*-UMS*:TCPPort'              = $Config.PSIGEL_TCPPort
+  #'*-UMS*:SecurityProtocol'     = $Config.PSIGEL_SecurityProtocol
+  '*-UMS*:Confirm'              = [System.Convert]::ToBoolean($Config.PSIGEL_Confirm)
+}
 $WebSession = New-UMSAPICookie
 $PSDefaultParameterValues.Add('*-UMS*:WebSession', $WebSession)
+#$WebSession
 #endregion
+
 
 #region Get-UMSDeviceDirectory
 $params = @{
@@ -64,8 +69,8 @@ $DeviceDirectoryColl = 1713, 1714, 1715 | Get-UMSDeviceDirectory @params
 $DeviceDirectoryColl #| Out-GridView
 #endregion
 
-<#
 
+<#
 #region Get-UMSFirmware
 'region Get-UMSFirmware'
 $params = @{
