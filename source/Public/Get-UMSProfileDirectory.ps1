@@ -1,5 +1,51 @@
 function Get-UMSProfileDirectory
 {
+  <#
+  .SYNOPSIS
+    Gets information on a profile directory.
+
+  .DESCRIPTION
+    Gets information on a profile directory via API.
+
+  .PARAMETER Computername
+    Computername of the UMS Server
+
+  .PARAMETER TCPPort
+    TCP Port API
+
+  .PARAMETER SecurityProtocol
+    Set SSL/TLS protocol
+
+  .PARAMETER WebSession
+    Websession Cookie
+
+  .PARAMETER Filter
+    Optional filter
+
+  .PARAMETER Id
+    ID of the profile
+
+  .INPUTS
+    System.Int32
+
+  .OUTPUTS
+    System.Object
+
+  .EXAMPLE
+    PS> Get-UMSProfileDirectory -ComputerName 'igelrmserver' -WebSession $WebSession
+
+    Get information on all profile directories
+
+  .EXAMPLE
+    PS> Get-UMSProfileDirectory -ComputerName 'igelrmserver' -WebSession $WebSession -Id 1840, 1841
+
+    Get information on profile directory with ID 1840 and 1841
+
+  .EXAMPLE
+    PS> 1840, 1841 | Get-UMSProfileDirectory -ComputerName 'igelrmserver' -WebSession $WebSession -Filter children
+
+    Get information on profile directory with ID 1840 and 1841, including its child directories
+  #>
   [CmdletBinding(DefaultParameterSetName = 'All')]
   param
   (
@@ -10,10 +56,6 @@ function Get-UMSProfileDirectory
     [ValidateRange(0, 65535)]
     [Int]
     $TCPPort = 8443,
-
-    [ValidateSet(3)]
-    [Int]
-    $ApiVersion = 3,
 
     [ValidateSet('Tls12', 'Tls11', 'Tls', 'Ssl3')]
     [String[]]
@@ -27,21 +69,13 @@ function Get-UMSProfileDirectory
     $Filter,
 
     [Parameter(ValueFromPipeline, ValueFromPipelineByPropertyName, ParameterSetName = 'Id')]
-    [Int]
+    [Int[]]
     $Id
   )
 
   Begin
   {
-    $UriArray = @($Computername, $TCPPort, $ApiVersion)
-    $BaseURL = ('https://{0}:{1}/umsapi/v{2}/directories/profiledirectories' -f $UriArray)
-    if ($Filter)
-    {
-      $FilterString = New-UMSFilterString -Filter $Filter
-    }
-  }
-  Process
-  {
+    $BaseURL = ('https://{0}:{1}/umsapi/v3/directories/profiledirectories' -f $Computername, $TCPPort)
     $Params = @{
       WebSession       = $WebSession
       Method           = 'Get'
@@ -49,48 +83,36 @@ function Get-UMSProfileDirectory
       Headers          = @{ }
       SecurityProtocol = ($SecurityProtocol -join ',')
     }
-    Switch ($PSCmdlet.ParameterSetName)
+    if ($true -eq $PSBoundParameters.Filter)
+    {
+      #'true'
+      $FilterString = New-UMSFilterString -Filter $Filter
+      #$FilterString
+    }
+  }
+  Process
+  {
+    $result = Switch ($PsCmdlet.ParameterSetName)
     {
       'All'
       {
-        $Params.Add('Uri', ('{0}{1}' -f $BaseURL, $FilterString))
-        $APIObjectColl = (Invoke-UMSRestMethod @Params).SyncRoot
+        $ParamsPS = @{
+          Uri = (('{0}{1}' -f $BaseURL, $FilterString))
+        }
+        (Invoke-UMSRestMethod @Params @ParamsPS).SyncRoot
       }
       'Id'
       {
-        $Params.Add('Uri', ('{0}/{1}{2}' -f $BaseURL, $Id, $FilterString))
-        $APIObjectColl = Invoke-UMSRestMethod @Params
-      }
-    }
-    $Result = foreach ($APIObject in $APIObjectColl)
-    {
-      $Properties = [ordered]@{
-        'Id'         = [Int]$APIObject.id
-        'Name'       = [String]$APIObject.name
-        'ParentId'   = [Int]$APIObject.parentID
-        'MovedToBin' = [System.Convert]::ToBoolean($APIObject.movedToBin)
-        'ObjectType' = [String]$APIObject.objectType
-      }
-      switch ($Filter)
-      {
-        'children'
+        foreach ($item in $Id)
         {
-          $DirectoryChildren = foreach ($child in $APIObject.DirectoryChildren)
-          {
-            $ChildProperties = [ordered]@{
-              'ObjectType' = [String]$child.objectType
-              'Id'         = [Int]$child.id
-            }
-            New-Object psobject -Property $ChildProperties
+          $ParamsPS = @{
+            Uri = ('{0}/{1}{2}' -f $BaseURL, $item, $FilterString)
           }
-          $Properties += [ordered]@{
-            'DirectoryChildren' = $DirectoryChildren
-          }
+          Invoke-UMSRestMethod @Params @ParamsPS
         }
       }
-      New-Object psobject -Property $Properties
     }
-    $Result
+    $result
   }
   End
   {

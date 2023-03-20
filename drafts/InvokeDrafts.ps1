@@ -39,8 +39,6 @@ $CredentialParams = @{
   )
 }
 $Credential = New-Object @CredentialParams
-$Credential
-
 
 $PSDefaultParameterValues = @{
   'New-UMSAPICookie:Credential' = $Credential
@@ -54,6 +52,22 @@ $PSDefaultParameterValues.Add('*-UMS*:WebSession', $WebSession)
 #$WebSession
 #endregion
 
+
+#region Get-UMSProfileDirectory
+$params = @{
+  #Id      = 1840 #, 1841, 1843
+  #Id      = @(1840, 1841, 1843)
+  #Filter  = 'children'
+  #Whatif  = $false
+  #Confirm = $false
+  Verbose = $true
+}
+#$ProfileDirectoryColl = Get-UMSProfileDirectory @params
+$ProfileDirectoryColl = 1840, 1841, 1843 | Get-UMSProfileDirectory @params
+$ProfileDirectoryColl #| Out-GridView
+#endregion
+
+<#
 
 #region Get-UMSDeviceDirectory
 $params = @{
@@ -69,8 +83,6 @@ $DeviceDirectoryColl = 1713, 1714, 1715 | Get-UMSDeviceDirectory @params
 $DeviceDirectoryColl #| Out-GridView
 #endregion
 
-
-<#
 #region Get-UMSFirmware
 'region Get-UMSFirmware'
 $params = @{
