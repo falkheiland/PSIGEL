@@ -19,9 +19,6 @@
   .PARAMETER WebSession
     Websession Cookie
 
-  .INPUTS
-    System.Int32
-
   .OUTPUTS
     System.Object
 
