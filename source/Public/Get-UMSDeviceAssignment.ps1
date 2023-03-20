@@ -1,5 +1,56 @@
 ﻿function Get-UMSDeviceAssignment
 {
+  <#
+  .SYNOPSIS
+    Gets information on a profile or master profile assignment of a device.
+
+  .DESCRIPTION
+    Gets information on a profile or master profile assignment of a device via API.
+
+  .PARAMETER Computername
+    Computername of the UMS Server
+
+  .PARAMETER TCPPort
+    TCP Port API
+
+  .PARAMETER SecurityProtocol
+    Set SSL/TLS protocol
+
+  .PARAMETER WebSession
+    Websession Cookie
+
+  .PARAMETER Filter
+    Optional filter
+
+  .PARAMETER Id
+    ID of the device
+
+  .INPUTS
+    System.Int32
+
+  .OUTPUTS
+    System.Object
+
+  .EXAMPLE
+    PS> Get-UMSDeviceAssignment -ComputerName 'igelrmserver' -WebSession $WebSession -Id 1693, 1694
+
+    Get profile assignment for device with ID 1693, 1694
+
+  .EXAMPLE
+    PS> 1693 | Get-UMSDeviceAssignment -ComputerName 'igelrmserver' -WebSession $WebSession
+
+    Get profile assignment for device with ID 1693
+
+  .EXAMPLE
+    PS> $PSDefaultParameterValues = @{
+          '*-UMS*:Computername'         = 'igelrmserver'
+          '*-UMS*:WebSession'           = $WebSession
+        }
+        (Get-UMSDevice).where{ $_.name -eq 'DEV-012345678901' } |
+          Get-UMSDeviceAssignment
+
+    Get profile assignment for device with name Device-012345678901
+  #>
   [CmdletBinding()]
   param
   (
@@ -11,10 +62,6 @@
     [Int]
     $TCPPort = 8443,
 
-    [ValidateSet(3)]
-    [Int]
-    $ApiVersion = 3,
-
     [ValidateSet('Tls12', 'Tls11', 'Tls', 'Ssl3')]
     [String[]]
     $SecurityProtocol = 'Tls12',
@@ -23,43 +70,31 @@
     $WebSession,
 
     [Parameter(ValueFromPipeline, ValueFromPipelineByPropertyName, Mandatory)]
-    [Int]
+    [Int[]]
     $Id
   )
 
   Begin
   {
-    $UriArray = @($Computername, $TCPPort, $ApiVersion)
-    $BaseURL = ('https://{0}:{1}/umsapi/v{2}/thinclients' -f $UriArray)
-  }
-  Process
-  {
+    $BaseURL = ('https://{0}:{1}/umsapi/v3/thinclients' -f $Computername, $TCPPort)
     $Params = @{
       WebSession       = $WebSession
-      Uri              = '{0}/{1}/assignments/profiles' -f $BaseURL, $Id
       Method           = 'Get'
       ContentType      = 'application/json; charset=utf-8'
       Headers          = @{ }
       SecurityProtocol = ($SecurityProtocol -join ',')
     }
-    $APIObjectColl = Invoke-UMSRestMethod @Params
-    $Result = foreach ($APIObject in $APIObjectColl)
+  }
+  Process
+  {
+    $result = foreach ($item in $Id)
     {
-      $ProfileColl = foreach ($child in $APIObject)
-      {
-        $ProfileProperties = [ordered]@{
-          'Id'                 = [Int]$Id
-          'ReceiverId'         = [Int]$child.receiver.id
-          'ReceiverType'       = [String]$child.receiver.type
-          'AssigneeId'         = [Int]$child.assignee.id
-          'AssigneeType'       = [String]$child.assignee.type
-          'AssignmentPosition' = [Int]$child.assignmentPosition
-        }
-        New-Object psobject -Property $ProfileProperties
+      $ParamsPS = @{
+        Uri = '{0}/{1}/assignments/profiles' -f $BaseURL, $item
       }
-      $ProfileColl
+      Invoke-UMSRestMethod @Params @ParamsPS
     }
-    $Result
+    $result
   }
   End
   {
