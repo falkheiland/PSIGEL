@@ -49,7 +49,7 @@ Pester:
         #- tests/QA/module.tests.ps1
         #- tests/Unit/
         #- tests/Unit/Get-UMSProfile.Tests.ps1
-        - tests/Unit/Get-UMSProfileDirectory.Tests.ps1
+        - tests/Unit/Get-UMSStatus.Tests.ps1
         #- tests/Unit/Get-PF*.Tests.ps1
         #- tests/Integration
       ExcludePath:
@@ -71,7 +71,7 @@ Pester:
         # Tests for New-PF* in ToDo
         #- source/Public/
         #- source/Public/Get-UMSProfile.ps1
-        - source/Public/Get-UMSProfileDirectory.ps1
+        - source/Public/Get-UMSStatus.ps1
       #- source/Public/Get-UMS*.ps1
       #- source/Public/Update-UMS*.ps1
       #- source/Public/Remove-UMS*.ps1

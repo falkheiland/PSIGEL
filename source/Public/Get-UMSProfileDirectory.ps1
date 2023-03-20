@@ -85,9 +85,7 @@ function Get-UMSProfileDirectory
     }
     if ($true -eq $PSBoundParameters.Filter)
     {
-      #'true'
       $FilterString = New-UMSFilterString -Filter $Filter
-      #$FilterString
     }
   }
   Process

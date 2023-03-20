@@ -53,6 +53,18 @@ $PSDefaultParameterValues.Add('*-UMS*:WebSession', $WebSession)
 #endregion
 
 
+#region Get-UMSStatus
+$params = @{
+  Verbose = $true
+}
+$StatusColl = Get-UMSStatus @params
+$StatusColl #| Out-GridView
+#endregion
+
+
+
+<#
+
 #region Get-UMSProfileDirectory
 $params = @{
   #Id      = 1840 #, 1841, 1843
@@ -66,8 +78,6 @@ $params = @{
 $ProfileDirectoryColl = 1840, 1841, 1843 | Get-UMSProfileDirectory @params
 $ProfileDirectoryColl #| Out-GridView
 #endregion
-
-<#
 
 #region Get-UMSDeviceDirectory
 $params = @{
