@@ -53,6 +53,26 @@ $PSDefaultParameterValues.Add('*-UMS*:WebSession', $WebSession)
 #endregion
 
 
+#region Get-UMSProfileAssignment
+$params = @{
+  #Id        = 90
+  #Id        = 92
+  #Id      = @(90, 92)
+  Directory = $true
+  #Whatif  = $false
+  #Confirm = $false
+  Verbose   = $true
+}
+#$ProfileAssignmentColl = Get-UMSProfileAssignment @params
+#$ProfileAssignmentColl = 90, 92 | Get-UMSProfileAssignment @params
+$ProfileAssignmentColl = (Get-UMSProfile).where{ $_.name -eq 'Profile01' } |
+  Get-UMSProfileAssignment @params
+$ProfileAssignmentColl #| Out-GridView
+#endregion
+
+
+<#
+
 #region Get-UMSDeviceAssignment
 $params = @{
   #Id      = 1693 #, 1694
@@ -67,8 +87,6 @@ $DeviceAssignmentColl = (Get-UMSDevice).where{ $_.name -eq 'DEV-012345678901' } 
   Get-UMSDeviceAssignment @params
 $DeviceAssignmentColl #| Out-GridView
 #endregion
-
-<#
 
 #region Get-UMSStatus
 $params = @{

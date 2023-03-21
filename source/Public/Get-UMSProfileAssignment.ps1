@@ -1,5 +1,56 @@
 ﻿function Get-UMSProfileAssignment
 {
+  <#
+  .SYNOPSIS
+    Gets information on a device or device directory assignment of a profile.
+
+  .DESCRIPTION
+    Gets information on a device or device directory assignment of a profile via API.
+
+  .PARAMETER Computername
+    Computername of the UMS Server
+
+  .PARAMETER TCPPort
+    TCP Port API
+
+  .PARAMETER SecurityProtocol
+    Set SSL/TLS protocol
+
+  .PARAMETER WebSession
+    Websession Cookie
+
+  .PARAMETER Filter
+    Optional filter
+
+  .PARAMETER Id
+    ID of the profile
+
+  .INPUTS
+    System.Int32
+
+  .OUTPUTS
+    System.Object
+
+  .EXAMPLE
+    PS> Get-UMSProfileAssignment -ComputerName 'igelrmserver' -WebSession $WebSession -Id 90, 92
+
+    Get profile assignment for profile with ID 90, 92
+
+  .EXAMPLE
+    PS> 90 | Get-UMSProfileAssignment -ComputerName 'igelrmserver' -WebSession $WebSession
+
+    Get profile assignment for profile with ID 90
+
+  .EXAMPLE
+    PS> $PSDefaultParameterValues = @{
+          '*-UMS*:Computername'         = 'igelrmserver'
+          '*-UMS*:WebSession'           = $WebSession
+        }
+        (Get-UMSProfile).where{ $_.name -eq 'Profile01' } |
+          Get-UMSProfileAssignment
+
+    Get profile assignment for profile with name Profile01
+  #>
   [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSReviewUnusedParameter', 'Directory', Justification = 'false positive')]
   [CmdletBinding(DefaultParameterSetName = 'Device')]
   param
@@ -12,10 +63,6 @@
     [Int]
     $TCPPort = 8443,
 
-    [ValidateSet(3)]
-    [Int]
-    $ApiVersion = 3,
-
     [ValidateSet('Tls12', 'Tls11', 'Tls', 'Ssl3')]
     [String[]]
     $SecurityProtocol = 'Tls12',
@@ -24,7 +71,7 @@
     $WebSession,
 
     [Parameter(ValueFromPipeline, ValueFromPipelineByPropertyName, Mandatory)]
-    [Int]
+    [Int[]]
     $Id,
 
     [Parameter(ValueFromPipeline, ParameterSetName = 'Directory')]
@@ -33,11 +80,6 @@
   )
   Begin
   {
-    $UriArray = @($Computername, $TCPPort, $ApiVersion)
-    $BaseURL = ('https://{0}:{1}/umsapi/v{2}/profiles' -f $UriArray)
-  }
-  Process
-  {
     $Params = @{
       WebSession       = $WebSession
       Method           = 'Get'
@@ -45,35 +87,29 @@
       Headers          = @{ }
       SecurityProtocol = ($SecurityProtocol -join ',')
     }
-
-    Switch ($PsCmdlet.ParameterSetName)
+    $BaseURL = ('https://{0}:{1}/umsapi/v3/profiles' -f $Computername, $TCPPort)
+    $EndURL = Switch ($PsCmdlet.ParameterSetName)
     {
       'Device'
       {
-        $Params.Add('Uri', ('{0}/{1}/assignments/thinclients' -f $BaseURL, $Id))
+        'thinclients'
       }
       'Directory'
       {
-        $Params.Add('Uri', ('{0}/{1}/assignments/tcdirectories' -f $BaseURL, $Id))
+        'tcdirectories'
       }
     }
-    $APIObjectColl = (Invoke-UMSRestMethod @Params).SyncRoot
-    $Result = foreach ($APIObject in $APIObjectColl)
+  }
+  Process
+  {
+    $result = foreach ($item in $Id)
     {
-      $ProfileColl = foreach ($child in $APIObject)
-      {
-        $ProfileProperties = [ordered]@{
-          'Id'                 = [Int]$child.assignee.id
-          'Type'               = [String]$child.assignee.type
-          'ReceiverId'         = [Int]$child.receiver.id
-          'ReceiverType'       = [String]$child.receiver.type
-          'AssignmentPosition' = [Int]$child.assignmentPosition
-        }
-        New-Object psobject -Property $ProfileProperties
+      $ParamsPS = @{
+        Uri = ('{0}/{1}/assignments/{2}' -f $BaseURL, $item, $EndURL)
       }
-      $ProfileColl
+      (Invoke-UMSRestMethod @Params @ParamsPS).SyncRoot
     }
-    $Result
+    $result
   }
   End
   {

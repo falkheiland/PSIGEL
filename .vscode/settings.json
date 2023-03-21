@@ -17,6 +17,7 @@
     "Knowledgebase",
     "PSIGEL",
     "Quickstart",
+    "tcdirectory",
     "UMSAPI"
   ],
   "pester.autoRunOnSave": false
