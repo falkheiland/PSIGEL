@@ -23,7 +23,7 @@
     Optional filter
 
   .PARAMETER Id
-    ID of the device
+    ID of the device directory
 
   .INPUTS
     System.Int32
@@ -57,9 +57,9 @@
     [Int]
     $TCPPort = 8443,
 
-    [ValidateSet('Tls13', 'Tls12', 'Tls11', 'Tls', 'Ssl3')]
+    [ValidateSet('Tls12', 'Tls11', 'Tls', 'Ssl3')]
     [String[]]
-    $SecurityProtocol = 'Tls13',
+    $SecurityProtocol = 'Tls12',
 
     [Parameter(Mandatory)]
     $WebSession,
