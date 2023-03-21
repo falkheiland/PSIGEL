@@ -19,6 +19,9 @@
   .PARAMETER WebSession
     Websession Cookie
 
+  .INPUTS
+    None
+
   .OUTPUTS
     System.Object
 

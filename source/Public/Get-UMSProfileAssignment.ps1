@@ -25,6 +25,9 @@
   .PARAMETER Id
     ID of the profile
 
+  .PARAMETER Directory
+    Switch to get assignments to directories. Default ($false) gets assignments to devices
+
   .INPUTS
     System.Int32
 
