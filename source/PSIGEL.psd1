@@ -76,7 +76,6 @@
     'Get-UMSDeviceAssignment'
     'Get-UMSDeviceDirectory'
     'Get-UMSDeviceDirectoryAssignment'
-    'Get-UMSDirectoryRecursive'
     'Get-UMSFirmware'
     'Get-UMSProfile'
     'Get-UMSProfileDirectory'

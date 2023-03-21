@@ -1,11 +1,4 @@
----
-external help file: PSIGEL-help.xml
-Module Name: PSIGEL
-online version: https://github.com/IGEL-Community/PSIGEL/blob/master/Docs/Reference/Get-UMSDirectoryRecursive.md
-schema: 2.0.0
----
-
-# Get-UMSDirectoryRecursive
+# GetUMSDirectoryRecursive
 
 ## SYNOPSIS
 Gets either all directory or element ids from below given directory id.
