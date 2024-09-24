@@ -52,7 +52,7 @@
   # ProcessorArchitecture = ''
 
   # Die Module, die vor dem Importieren dieses Moduls in die globale Umgebung geladen werden muessen
-  # RequiredModules = @()
+  RequiredModules = @()
 
   # Die Assemblys, die vor dem Importieren dieses Moduls geladen werden muessen
   # RequiredAssemblies = @()
@@ -119,7 +119,7 @@
   AliasesToExport      = @()
 
   # Aus diesem Modul zu exportierende DSC-Ressourcen
-  # DscResourcesToExport = @()
+  DscResourcesToExport = @()
 
   # Liste aller Module in diesem Modulpaket
   # ModuleList = @()
@@ -133,6 +133,7 @@
 
     PSData = @{
 
+        Prerelease =  ''
       # 'Tags' wurde auf das Modul angewendet und unterstuetzt die Modulermittlung in Onlinekatalogen.
       Tags         = @('IGEL', 'UMS', 'IMI')
 
@@ -171,5 +172,10 @@ v0.10.0 20200429
   # DefaultCommandPrefix = ''
 
 }
+
+
+
+
+
 
 
