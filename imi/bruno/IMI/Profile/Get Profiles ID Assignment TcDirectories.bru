@@ -1,0 +1,11 @@
+meta {
+  name: Get Profiles ID Assignment TcDirectories
+  type: http
+  seq: 1
+}
+
+get {
+  url: https://{{server}}:8443/umsapi/v3/profiles/{{profileID}}/assignments/tcdirectories
+  body: none
+  auth: none
+}

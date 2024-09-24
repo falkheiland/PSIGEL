@@ -2,6 +2,7 @@ output/
 
 config.psd1
 devcontainer.env
+collection.bru
 *.html
 
 **.bak

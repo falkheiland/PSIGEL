@@ -1,0 +1,11 @@
+meta {
+  name: Get AssetInfo TCID
+  type: http
+  seq: 1
+}
+
+get {
+  url: https://{{server}}:8443/umsapi/v3/assetinfo/thinclients/{{tcid}}
+  body: none
+  auth: none
+}

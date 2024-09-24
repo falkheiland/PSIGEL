@@ -1,0 +1,11 @@
+meta {
+  name: Get AssetHistory UnitID
+  type: http
+  seq: 1
+}
+
+get {
+  url: https://{{server}}:8443/umsapi/v3/assethistory/thinclients/{{unitId}}
+  body: none
+  auth: none
+}

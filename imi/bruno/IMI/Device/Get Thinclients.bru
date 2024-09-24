@@ -1,0 +1,20 @@
+meta {
+  name: Get Thinclients
+  type: http
+  seq: 1
+}
+
+get {
+  url: https://{{server}}:8443/umsapi/v3/thinclients
+  body: none
+  auth: none
+}
+
+params:query {
+  ~facets: short
+  ~facets: details
+  ~facets: online
+  ~facets: shadow
+  ~facets: networkadapters
+  ~facets: deviceattributes
+}
