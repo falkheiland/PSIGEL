@@ -1,0 +1,11 @@
+meta {
+  name: Get Profiles ID Assignment Thinclients
+  type: http
+  seq: 1
+}
+
+get {
+  url: https://{{server}}:8443/umsapi/v3/profiles/{{profileID}}/assignments/thinclients
+  body: none
+  auth: none
+}

@@ -1,0 +1,11 @@
+meta {
+  name: Get AssetInfo AssetID
+  type: http
+  seq: 1
+}
+
+get {
+  url: https://{{server}}:8443/umsapi/v3/assetinfo/assets/{{assetId}}
+  body: none
+  auth: none
+}
