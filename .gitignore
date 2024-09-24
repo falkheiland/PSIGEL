@@ -3,6 +3,7 @@ output/
 config.psd1
 devcontainer.env
 collection.bru
+servername.bru
 *.html
 
 **.bak
