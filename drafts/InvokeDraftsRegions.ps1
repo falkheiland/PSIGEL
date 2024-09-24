@@ -3,7 +3,7 @@
 
 $DSC = [IO.Path]::DirectorySeparatorChar
 
-if (!(Test-Path .\InvokeDrafts.ps1))
+if (!(Test-Path .\InvokeDraftsRegions.ps1))
 {
   throw 'Set Location to the path where this script is located!'
 }
@@ -52,7 +52,16 @@ $PSDefaultParameterValues.Add('*-UMS*:WebSession', $WebSession)
 
 #region stop full script execution via F5
 throw 'use F8 to execute the regions individually!'
-##endregion
+#endregion
+
+#region Get-UMSStatus
+$params = @{
+  #Whatif  = $false
+  #Confirm = $false
+}
+$StatusColl = Get-UMSStatus @params
+$StatusColl
+#endregion
 
 #region Get-UMSFirmware
 $params = @{
@@ -61,6 +70,28 @@ $params = @{
 }
 $FirmwareColl = Get-UMSFirmware @params
 $FirmwareColl
+#endregion
+
+#region Get-UMSFirmware -Id 121
+$params = @{
+  Id = 121
+  #Whatif  = $false
+  #Confirm = $false
+}
+$FirmwareColl = Get-UMSFirmware @params
+$FirmwareColl
+#endregion
+
+#region Get-UMSDevice -Id 121
+$DeviceColl = ''
+$params = @{
+  Id     = 2030746
+  Filter = 'details'
+  #Whatif  = $false
+  #Confirm = $false
+}
+$DeviceColl = Get-UMSDevice @params
+$DeviceColl
 #endregion
 
 #region https://igelcommunity.slack.com/archives/C8GP9JHQE/p1677627574428399

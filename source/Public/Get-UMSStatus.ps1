@@ -41,9 +41,9 @@
     [Int]
     $TCPPort = 8443,
 
-    [ValidateSet('Tls12', 'Tls11', 'Tls', 'Ssl3')]
+    [ValidateSet('Tls13', 'Tls12', 'Tls11', 'Tls', 'Ssl3')]
     [String[]]
-    $SecurityProtocol = 'Tls12',
+    $SecurityProtocol = 'Tls13',
 
     [Parameter(Mandatory)]
     $WebSession
