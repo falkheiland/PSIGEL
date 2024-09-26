@@ -10,6 +10,7 @@ servername.bru
 *.local.*
 !**/README.md
 .kitchen/
+*.code-workspace
 
 *.nupkg
 *.suo

@@ -65,15 +65,6 @@ $StatusColl
 
 #region Get-UMSFirmware
 $params = @{
-  #Whatif  = $false
-  #Confirm = $false
-}
-$FirmwareColl = Get-UMSFirmware @params
-$FirmwareColl
-#endregion
-
-#region Get-UMSFirmware -Id 121
-$params = @{
   Id = 121
   #Whatif  = $false
   #Confirm = $false
@@ -82,7 +73,7 @@ $FirmwareColl = Get-UMSFirmware @params
 $FirmwareColl
 #endregion
 
-#region Get-UMSDevice -Id 121
+#region Get-UMSDevice
 $DeviceColl = ''
 $params = @{
   Id     = 2030746
