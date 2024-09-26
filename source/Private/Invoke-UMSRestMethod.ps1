@@ -1,25 +1,54 @@
 function Invoke-UMSRestMethod
 {
   <#
-    .SYNOPSIS
+  .SYNOPSIS
     Invoke-RestMethod Wrapper for UMS API
 
-    .DESCRIPTION
+  .DESCRIPTION
     Invoke-RestMethod Wrapper for UMS API
 
-    .EXAMPLE
-    $Params = @{
+  .PARAMETER SecurityProtocol
+    Set SSL/TLS protocol
+
+  .PARAMETER WebSession
+    Websession Cookie
+
+  .PARAMETER Uri
+    Uniform Resource Identifier (URI) of the internet resource to which the request is sent
+
+  .PARAMETER Body
+    Body of the request
+
+  .PARAMETER ContentType
+    Content type of the request
+
+  .PARAMETER Headers
+    Headers of the request
+
+  .PARAMETER Method
+    Method of the request
+
+  .INPUTS
+    System.Object
+
+  .OUTPUTS
+    System.Object
+
+  .EXAMPLE
+    PS> $Params = @{
       WebSession       = $WebSession
       Uri              = $Uri
-      Method           = 'Put'
+      Method           = 'Get'
       ContentType      = 'application/json; charset=utf-8'
       Headers          = @{}
       SecurityProtocol = ($SecurityProtocol -join ',')
     }
     Invoke-UMSRestMethod @Params
 
-    .EXAMPLE
-    $Params = @{
+    Invokes a GET Method call.
+
+  .EXAMPLE
+    PS>  $Params = @{
       WebSession       = $WebSession
       Uri              = $Uri
       Body             = $Body
@@ -30,6 +59,7 @@ function Invoke-UMSRestMethod
     }
     Invoke-UMSRestMethod @Params
 
+    Invokes a PUT Method call.
   #>
 
   [CmdletBinding(DefaultParameterSetName = 'Login')]

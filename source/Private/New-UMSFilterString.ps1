@@ -1,26 +1,23 @@
 function New-UMSFilterString
 {
   <#
-  .EXAMPLE
-  New-UMSFilterString -Filter 'short' -Whatif
+  .SYNOPSIS
+    Creates a filter string to add to a request
+
+  .DESCRIPTION
+    Creates a filter string to add to a request
+
+  .PARAMETER Filter
+    Filter can be one of the following: 'short', 'details', 'online', 'shadow', 'children', 'deviceattributes', 'networkadapters'
+
+  .INPUTS
+    System.String
+
+  .OUTPUTS
+    System.String
 
   .EXAMPLE
-  New-UMSFilterString -Filter 'full'
-
-  .EXAMPLE
-  New-UMSFilterString -Filter 'online'
-
-  .EXAMPLE
-  New-UMSFilterString -Filter 'shadow'
-
-  .EXAMPLE
-  New-UMSFilterString -Filter 'children'
-
-  .EXAMPLE
-  New-UMSFilterString -Filter 'deviceattributes'
-
-  .EXAMPLE
-  New-UMSFilterString -Filter 'networkadapters'
+    New-UMSFilterString -Filter 'online'
 
   #>
 

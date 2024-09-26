@@ -41,8 +41,8 @@ NestedModule:
 # Defining 'Workflows' (suite of InvokeBuild tasks) to be run using their alias
 BuildWorkflow:
   ".": # "." is the default Invoke-Build workflow. It is called when no -Tasks is specified to the build.ps1
-    - build
     - test
+    #- build
 
   build:
     - Clean
@@ -61,7 +61,7 @@ BuildWorkflow:
     - Pester_Tests_Stop_On_Fail
     # Use this task if pipeline uses code coverage and the module is using the
     # pattern of Public, Private, Enum, Classes.
-    #- Convert_Pester_Coverage
+    - Convert_Pester_Coverage
     - Pester_if_Code_Coverage_Under_Threshold
 
   # Use this task when you have multiple parallel tests, which produce multiple
@@ -78,35 +78,40 @@ BuildWorkflow:
 ####################################################
 
 Pester:
-  OutputFormat: NUnitXML
-  # Excludes one or more paths from being used to calculate code coverage.
-  ExcludeFromCodeCoverage:
+  # Pester Advanced configuration.
+  # If a key is not set it will be using Sampler pipeline default value.
+  Configuration:
+    Run:
+      Path:
+        #- tests/Unit/New-UMSFilterString.Tests.ps1
+        #- tests/Unit/Get-UMSDevice.Tests.ps1
+        - tests/Unit/Invoke-UMSRestMethod.Tests.ps1
 
-  # If no scripts are defined the default is to use all the tests under the project's
-  # tests folder or source folder (if present). Test script paths can be defined to
-  # only run tests in certain folders, or run specific test files, or can be use to
-  # specify the order tests are run.
-  Script:
-    #  - tests/QA/module.tests.ps1
-    #  - tests/QA
-    #  - tests/Unit
-    - tests/Unit
-    #  - tests/Unit/Get*
-  #  - tests/Integration
-  ExcludeTag:
-    - CL_Update
-  #  - Module_M
-  #  - helpQuality
-  #  - FunctionalQuality
-  #  - TestQuality
-  Tag:
-  #CodeCoverageThreshold: 85 # Set to 0 to bypass
-  #CodeCoverageOutputFile: JaCoCo_$OsShortName.xml
-  #CodeCoverageOutputFileEncoding: ascii
-  # Use this if code coverage should be merged from several pipeline test jobs.
-  # Any existing keys above should be replaced. See also CodeCoverage below.
-  # CodeCoverageOutputFile is the file that is created for each pipeline test job.
-  #CodeCoverageOutputFile: JaCoCo_Merge.xml
+    #   ExcludePath:
+    # Filter:
+    #   Tag:
+
+    #   ExcludeTag:
+
+    # Output:
+    #   Verbosity:
+    CodeCoverage:
+      #Path: source #CodeCoverage does not work with default <empty>
+      #Path: source/Private/New-UMSFilterString.ps1
+      #Path: source/Public/Get-UMSDevice.ps1
+      Path: source/Private/Invoke-UMSRestMethod.ps1
+      #   OutputFormat:
+      CoveragePercentTarget: 85
+    #   OutputPath:
+    #   OutputEncoding:
+    #   ExcludeTests:
+    TestResult:
+      OutputFormat: NUnitXML
+    # OutputPath:
+    # OutputEncoding:
+    # TestSuiteName:
+  # Sampler pipeline configuration
+  #ExcludeFromCodeCoverage:
 
 # Use this to merged code coverage from several pipeline test jobs.
 # CodeCoverageFilePattern      - the pattern used to search all pipeline test job artifacts
