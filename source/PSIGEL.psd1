@@ -52,7 +52,7 @@
   # ProcessorArchitecture = ''
 
   # Die Module, die vor dem Importieren dieses Moduls in die globale Umgebung geladen werden muessen
-  RequiredModules = @()
+  RequiredModules      = @()
 
   # Die Assemblys, die vor dem Importieren dieses Moduls geladen werden muessen
   # RequiredAssemblies = @()
@@ -81,30 +81,30 @@
     'Get-UMSProfileDirectory'
     'Get-UMSProfileAssignment'
     'Get-UMSStatus'
-    'Move-UMSDevice'
-    'Move-UMSDeviceDirectory'
-    'Move-UMSProfile'
-    'Move-UMSProfileDirectory'
-    'New-UMSAPICookie'
-    'New-UMSDevice'
-    'New-UMSDeviceDirectory'
-    'New-UMSProfileAssignment'
-    'New-UMSProfileDirectory'
-    'Remove-UMSAPICookie'
-    'Remove-UMSDevice'
-    'Remove-UMSDeviceDirectory'
-    'Remove-UMSProfile'
-    'Remove-UMSProfileAssignment'
-    'Remove-UMSProfileDirectory'
-    'Reset-UMSDevice'
-    'Restart-UMSDevice'
-    'Send-UMSDeviceSetting'
-    'Start-UMSDevice'
-    'Stop-UMSDevice'
-    'Update-UMSDevice'
-    'Update-UMSDeviceDirectory'
-    'Update-UMSProfile'
-    'Update-UMSProfileDirectory'
+    # 'Move-UMSDevice'
+    # 'Move-UMSDeviceDirectory'
+    # 'Move-UMSProfile'
+    # 'Move-UMSProfileDirectory'
+    # 'New-UMSAPICookie'
+    # 'New-UMSDevice'
+    # 'New-UMSDeviceDirectory'
+    # 'New-UMSProfileAssignment'
+    # 'New-UMSProfileDirectory'
+    # 'Remove-UMSAPICookie'
+    # 'Remove-UMSDevice'
+    # 'Remove-UMSDeviceDirectory'
+    # 'Remove-UMSProfile'
+    # 'Remove-UMSProfileAssignment'
+    # 'Remove-UMSProfileDirectory'
+    # 'Reset-UMSDevice'
+    # 'Restart-UMSDevice'
+    # 'Send-UMSDeviceSetting'
+    # 'Start-UMSDevice'
+    # 'Stop-UMSDevice'
+    # 'Update-UMSDevice'
+    # 'Update-UMSDeviceDirectory'
+    # 'Update-UMSProfile'
+    # 'Update-UMSProfileDirectory'
   )
 
   # Aus diesem Modul zu exportierende Cmdlets. Um optimale Leistung zu erzielen, verwenden Sie keine Platzhalter und loeschen den Eintrag nicht.
@@ -133,7 +133,7 @@
 
     PSData = @{
 
-        Prerelease =  ''
+      Prerelease   = ''
       # 'Tags' wurde auf das Modul angewendet und unterstuetzt die Modulermittlung in Onlinekatalogen.
       Tags         = @('IGEL', 'UMS', 'IMI')
 
