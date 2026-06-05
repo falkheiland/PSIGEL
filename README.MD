@@ -1,6 +1,6 @@
 # PSIGEL
 
-*** PSIGEL has a new home: https://codeberg.org/falkheiland/PSIGEL ***
+***PSIGEL has a new home: https://codeberg.org/falkheiland/PSIGEL***
 
 [![GitHub last commit][github-commit-badge]][github-psigel]
 [![GitHub release (latest by date)][github-release-badge]][github-psigel]
